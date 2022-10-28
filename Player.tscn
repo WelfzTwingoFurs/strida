@@ -242,7 +242,10 @@ tracks/0/keys = {
 "values": [ 14, 15 ]
 }
 
-[node name="Player" type="KinematicBody2D"]
+[node name="Player" type="KinematicBody2D" groups=[
+"player",
+]]
+collision_layer = 2
 script = ExtResource( 2 )
 
 [node name="AniPlay" type="AnimationPlayer" parent="."]
@@ -262,7 +265,7 @@ position = Vector2( 0, -20 )
 texture = ExtResource( 1 )
 hframes = 10
 vframes = 4
-frame = 16
+frame = 18
 
 [node name="ColPoly" type="CollisionPolygon2D" parent="."]
 visible = false

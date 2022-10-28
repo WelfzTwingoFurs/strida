@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://Player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://TileMap.tscn" type="PackedScene" id=2]
 [ext_resource path="res://TileZone.tscn" type="PackedScene" id=3]
 [ext_resource path="res://PlayerKick.tscn" type="PackedScene" id=4]
+[ext_resource path="res://PowerUp.tscn" type="PackedScene" id=5]
 
 [node name="Node2D" type="Node2D"]
 
@@ -11,8 +12,35 @@
 position = Vector2( -208.093, -123.522 )
 z_index = 4095
 collision/safe_margin = 0.8
+pow_wave = false
+pow_motion = 0
+pow_repeat = false
+pow_scale = 1
 
 [node name="PlayerKick" parent="." instance=ExtResource( 4 )]
+
+[node name="PowerUp" parent="." instance=ExtResource( 5 )]
+position = Vector2( -91.4141, -16.9176 )
+
+[node name="PowerUp2" parent="." instance=ExtResource( 5 )]
+position = Vector2( -147.334, -16.9176 )
+id = 1
+
+[node name="PowerUp3" parent="." instance=ExtResource( 5 )]
+position = Vector2( -43.9033, -16.0767 )
+id = 2
+
+[node name="PowerUp5" parent="." instance=ExtResource( 5 )]
+position = Vector2( -19.1812, -16.0767 )
+id = 2
+
+[node name="PowerUp6" parent="." instance=ExtResource( 5 )]
+position = Vector2( -65.6288, -15.3276 )
+id = 2
+
+[node name="PowerUp4" parent="." instance=ExtResource( 5 )]
+position = Vector2( 7.81177, -14.3949 )
+id = 3
 
 [node name="TileZone" parent="." instance=ExtResource( 3 )]
 modulate = Color( 1, 1, 1, 0.498039 )
