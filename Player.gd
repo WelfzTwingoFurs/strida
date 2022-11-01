@@ -85,17 +85,18 @@ func _physics_process(_delta):
 		$ColPoly.scale.x = 1
 	
 	
+	if is_on_floor() && was_on_floor:
+		$Audio.JUMPLANDs()
+		was_on_floor = false
 	
-	
+	if !is_on_floor():
+		was_on_floor = true
 
-func noclip():
-	$ColPoly.disabled = true
-	motion = Vector2(0,0)
-	position += input*10
-	
-	if Input.is_action_just_pressed("bug_noclip"):
-		$ColPoly.disabled = false
-		change_state(STATES.IDLE)
+var was_on_floor = false
+
+
+
+
 
 func idle():
 	if Input.is_action_just_pressed("bug_noclip"): change_state(STATES.NOCLIP)
@@ -140,6 +141,7 @@ func idle():
 	
 	if is_on_floor_or_wall():#if on_floor if on_tile !=3, if on_wall if it is
 		if Input.is_action_just_pressed("ply_jump") && (on_tile < 3):#can't jump on a slope too steep
+			$Audio.JUMPs()
 			motion.y -= JUMP
 			
 		
@@ -193,6 +195,8 @@ func idle():
 				$AniPlay.stop()
 				if sign(motion.y) == 1:
 					$Sprite.frame = 6
+					
+					
 				else:
 					$Sprite.frame = 5
 				#elif Input.is_action_pressed("ply_jump"):
@@ -202,6 +206,21 @@ func idle():
 	$Sprite.scale.x = facing
 	
 	
+
+
+
+
+
+
+func noclip():
+	$ColPoly.disabled = true
+	motion = Vector2(0,0)
+	position += input*10
+	
+	if Input.is_action_just_pressed("bug_noclip"):
+		$ColPoly.disabled = false
+		change_state(STATES.IDLE)
+
 
 
 
@@ -222,7 +241,7 @@ export var pow_scale = 2
 func kick():
 	$AniPlay.playback_speed = 1
 	#don't re-do animation if only input.y is changed
-	if $AniPlay.current_animation != "kickhigh" && $AniPlay.current_animation != "kickmid" && $AniPlay.current_animation != "kicklow":
+	if $AniPlay.current_animation != "kickhigh" && $AniPlay.current_animation != "kickmid" && $AniPlay.current_animation != "kicklow" && $AniPlay.current_animation != "kickhighair" && $AniPlay.current_animation != "kickmidair" && $AniPlay.current_animation != "kicklowair":
 		kick_anim()
 	
 	if is_on_floor():
@@ -251,22 +270,35 @@ func kick():
 
 
 func kick_anim():
+	$Audio.JUMPLANDs()
 	if input.x != 0: facing = input.x
 	$AniPlay.stop()
 	
 	motion.x += facing*10 + input.x*10
+	#if is_on_floor():
 	if input.y == -1:
-		$AniPlay.play("kickhigh")
+		if is_on_floor(): $AniPlay.play("kickhigh")
+		else: $AniPlay.play("kickhighair")
 	elif input.y == 0:
-		$AniPlay.play("kickmid")
+		if is_on_floor(): $AniPlay.play("kickmid")
+		else: $AniPlay.play("kickmidair")
 	elif input.y == 1:
-		$AniPlay.play("kicklow")
+		if is_on_floor(): $AniPlay.play("kicklow")
+		else: $AniPlay.play("kicklowair")
+#	else:
+#		if input.y == -1:
+#			$AniPlay.play("kickhighair")
+#		elif input.y == 0:
+#			$AniPlay.play("kickmidair")
+#		elif input.y == 1:
+#			$AniPlay.play("kicklowair")
 
 
 const kick_shot = preload("res://PlayerKick.tscn")
 
 func kick_shoot(pos):
 	if pow_wave:
+		$Audio.SHOOTs()
 		var kick_instance = kick_shot.instance()
 		kick_instance.pos = pos
 		kick_instance.facing = facing
@@ -285,7 +317,6 @@ func kick_shoot(pos):
 				kick_instance.extra_position = Vector2(22*facing, -32)
 			elif pos == 1:
 				kick_instance.extra_position = Vector2(20*facing,0)
-		
 		get_parent().add_child(kick_instance)
 
 
