@@ -26,4 +26,5 @@ func _on_Area2D_body_entered(body):
 		elif id == 3:
 			body.pow_scale += 0.5
 		
+		Global.audio.SHOOTs()
 		queue_free()

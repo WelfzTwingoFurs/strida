@@ -2,6 +2,7 @@ extends Node
 
 var TileZone
 var player
+var audio
 var camera = Camera2D
 
 var maxi = false

@@ -12,11 +12,11 @@ func _process(_delta):
 		visible = !visible
 	
 	if Input.is_action_just_pressed("cam_plus") or Input.is_action_just_pressed("cam_minus") or change_checker != OS.window_size:
-		margin_top    = (-OS.window_size.y * 1/Global.zoom)
-		margin_left   = (-OS.window_size.x * 1/Global.zoom)
+		margin_top    = (OS.window_size.y/3 * 1/Global.zoom)
+		margin_left   = (OS.window_size.x/3 * 1/Global.zoom)
 		
-		#margin_bottom = (OS.window_size.y * Global.camera.zoom.y)
-		#margin_right = (OS.window_size.x * Global.camera.zoom.x)
+		margin_bottom = margin_top + 10
+		margin_right = margin_left + 10
 	
-	text = str(int(Global.player.motion.x))
+	text = str(int(abs(Global.player.motion.x)))
 	

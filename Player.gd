@@ -30,6 +30,10 @@ func _physics_process(_delta):
 		STATES.NOCLIP:
 			noclip()
 	
+	update()
+	
+	########################################################################
+	
 	motion = move_and_slide(motion, Vector2(0,-1))
 	
 	
@@ -48,12 +52,13 @@ func _physics_process(_delta):
 	else:
 		input.x = 0
 	
-	
+	########################################################################
 	
 	
 	#$ColPoly2.polygon[3] = $RayL.get_collision_point()
 	#$ColPoly2.polygon[2] = $RayR.get_collision_point()
 	
+	########################################################################
 	
 	on_tile = Global.TileZone.get_cellv( Global.TileZone.world_to_map(position) )
 	
@@ -84,16 +89,23 @@ func _physics_process(_delta):
 	else:
 		$ColPoly.scale.x = 1
 	
+	########################################################################
 	
 	if is_on_floor() && was_on_floor:
-		$Audio.JUMPLANDs()
+		Global.audio.JUMPLANDs()
 		was_on_floor = false
 	
 	if !is_on_floor():
 		was_on_floor = true
+	
+	########################################################################
+	if $JumpCheck.is_colliding():
+		jump_check = true
+	else:
+		jump_check = false
 
 var was_on_floor = false
-
+var jump_check = false
 
 
 
@@ -141,7 +153,7 @@ func idle():
 	
 	if is_on_floor_or_wall():#if on_floor if on_tile !=3, if on_wall if it is
 		if Input.is_action_just_pressed("ply_jump") && (on_tile < 3):#can't jump on a slope too steep
-			$Audio.JUMPs()
+			Global.audio.JUMPs()
 			motion.y -= JUMP
 			
 		
@@ -210,16 +222,25 @@ func idle():
 
 
 
+func ani_walk():#Use this function as we have varying animations
+	if on_tile < 1:
+		$AniPlay.play("walk")
+	elif on_tile == 1:
+		$AniPlay.play("walk1")
+	elif on_tile == 2:
+		$AniPlay.play("walk2")
+	elif on_tile == 3:
+		$AniPlay.play("walk3")
+
+func ani_walkslope():#Use this function as we have varying animations
+	if on_tile == 1:
+		$AniPlay.play("walkslope1")
+	elif on_tile == 2:
+		$AniPlay.play("walkslope2")
+	elif on_tile == 3:
+		$AniPlay.play("walkslope3")
 
 
-func noclip():
-	$ColPoly.disabled = true
-	motion = Vector2(0,0)
-	position += input*10
-	
-	if Input.is_action_just_pressed("bug_noclip"):
-		$ColPoly.disabled = false
-		change_state(STATES.IDLE)
 
 
 
@@ -270,7 +291,7 @@ func kick():
 
 
 func kick_anim():
-	$Audio.JUMPLANDs()
+	Global.audio.JUMPLANDs()
 	if input.x != 0: facing = input.x
 	$AniPlay.stop()
 	
@@ -298,7 +319,8 @@ const kick_shot = preload("res://PlayerKick.tscn")
 
 func kick_shoot(pos):
 	if pow_wave:
-		$Audio.SHOOTs()
+		pos = input.y
+		Global.audio.SHOOTs()
 		var kick_instance = kick_shot.instance()
 		kick_instance.pos = pos
 		kick_instance.facing = facing
@@ -329,23 +351,6 @@ func kick_shoot(pos):
 
 
 
-func ani_walk():#Use this function as we have varying animations
-	if on_tile < 1:
-		$AniPlay.play("walk")
-	elif on_tile == 1:
-		$AniPlay.play("walk1")
-	elif on_tile == 2:
-		$AniPlay.play("walk2")
-	elif on_tile == 3:
-		$AniPlay.play("walk3")
-
-func ani_walkslope():#Use this function as we have varying animations
-	if on_tile == 1:
-		$AniPlay.play("walkslope1")
-	elif on_tile == 2:
-		$AniPlay.play("walkslope2")
-	elif on_tile == 3:
-		$AniPlay.play("walkslope3")
 
 
 
@@ -356,3 +361,28 @@ func is_on_floor_or_wall():
 	
 	return false
 
+
+
+func _draw():
+	var adjust = -Vector2(-OS.window_size.x/3 * 1/Global.zoom,-OS.window_size.y/3 * 1/Global.zoom)
+	var pointy
+	
+	#motion.x = 800
+	
+	if abs(motion.x) > 800: pointy = Vector2(-100* 1/Global.zoom,0).rotated(800*0.004) + adjust
+	else:                   pointy = Vector2(-100* 1/Global.zoom,0).rotated(abs(motion.x)*0.004) + adjust
+		
+	
+	draw_line(adjust,pointy,Color(1,1,1),1/Global.zoom)
+
+
+
+
+func noclip():
+	$ColPoly.disabled = true
+	motion = Vector2(0,0)
+	position += input*10
+	
+	if Input.is_action_just_pressed("bug_noclip"):
+		$ColPoly.disabled = false
+		change_state(STATES.IDLE)
