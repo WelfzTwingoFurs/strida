@@ -1,6 +1,6 @@
 extends KinematicBody2D
 
-enum STATES {IDLE,ATTACK,NOCLIP}
+enum STATES {IDLE,ATTACK,NOCLIP,OUCH}
 export(int) var state = STATES.IDLE
 var motion = Vector2(0,0)
 
@@ -29,12 +29,19 @@ func _physics_process(_delta):
 			kick()
 		STATES.NOCLIP:
 			noclip()
+		STATES.OUCH:
+			pass
 	
+	motion = move_and_slide(motion, Vector2(0,-1))
 	update()
 	
 	########################################################################
 	
-	motion = move_and_slide(motion, Vector2(0,-1))
+	motion.y += GRAVITY
+	$Sprite.scale.x = facing
+	
+	########################################################################
+	
 	
 	
 	if Input.is_action_pressed("ply_up"):
@@ -55,8 +62,6 @@ func _physics_process(_delta):
 	########################################################################
 	
 	
-	#$ColPoly2.polygon[3] = $RayL.get_collision_point()
-	#$ColPoly2.polygon[2] = $RayR.get_collision_point()
 	
 	########################################################################
 	
@@ -103,16 +108,16 @@ func _physics_process(_delta):
 		jump_check = true
 	else:
 		jump_check = false
+		
 
 var was_on_floor = false
 var jump_check = false
 
 
-
+################################################################################
 
 func idle():
 	if Input.is_action_just_pressed("bug_noclip"): change_state(STATES.NOCLIP)
-	motion.y += GRAVITY
 	
 	if Input.is_action_just_pressed("ply_attack"):
 		change_state(STATES.ATTACK)
@@ -129,7 +134,7 @@ func idle():
 				facing = input.x
 			
 		elif (abs(motion.x) > TOP_SPEED) && (input.x == sign(motion.x)): #over max speed, don't slow down
-			pass
+			facing = sign(motion.x) #kick backwards will keep facing, fix.
 			
 		
 		else: #over half, under over max speed
@@ -215,7 +220,6 @@ func idle():
 				#	$AniPlay.stop()
 				#	$Sprite.frame = 5 
 	
-	$Sprite.scale.x = facing
 	
 	
 
@@ -240,6 +244,7 @@ func ani_walkslope():#Use this function as we have varying animations
 	elif on_tile == 3:
 		$AniPlay.play("walkslope3")
 
+################################################################################
 
 
 
@@ -250,14 +255,16 @@ func ani_walkslope():#Use this function as we have varying animations
 
 
 
-
-
+################################################################################
 
 #kick powers
 export var pow_wave = true
 export var pow_motion = 1
 export var pow_repeat = true
 export var pow_scale = 2
+export var pow_double = true
+export var pow_piercing = true
+export var pow_nostop = true
 
 func kick():
 	$AniPlay.playback_speed = 1
@@ -276,8 +283,6 @@ func kick():
 	elif input.x != facing && input.x != 0:
 			motion.x = lerp(motion.x,TOP_SPEED*input.x,ACCEL/10)
 	
-	motion.y += GRAVITY
-	$Sprite.scale.x = facing
 	
 	
 	#if ((on_tile == 3) && is_on_floor_or_wall()):
@@ -291,19 +296,22 @@ func kick():
 
 
 func kick_anim():
-	Global.audio.JUMPLANDs()
+	Global.audio.KICKs()
 	if input.x != 0: facing = input.x
 	$AniPlay.stop()
 	
 	motion.x += facing*10 + input.x*10
 	#if is_on_floor():
 	if input.y == -1:
+		$Area/Col.position = Vector2(13*facing,-30)
 		if is_on_floor(): $AniPlay.play("kickhigh")
 		else: $AniPlay.play("kickhighair")
 	elif input.y == 0:
+		$Area/Col.position = Vector2(18*facing,-16)
 		if is_on_floor(): $AniPlay.play("kickmid")
 		else: $AniPlay.play("kickmidair")
 	elif input.y == 1:
+		$Area/Col.position = Vector2(14*facing,-1)
 		if is_on_floor(): $AniPlay.play("kicklow")
 		else: $AniPlay.play("kicklowair")
 #	else:
@@ -324,6 +332,7 @@ func kick_shoot(pos):
 		var kick_instance = kick_shot.instance()
 		kick_instance.pos = pos
 		kick_instance.facing = facing
+		kick_instance.pierce = pow_piercing
 		
 		kick_instance.scale = Vector2(pow_scale,pow_scale)
 		
@@ -340,20 +349,68 @@ func kick_shoot(pos):
 			elif pos == 1:
 				kick_instance.extra_position = Vector2(20*facing,0)
 		get_parent().add_child(kick_instance)
+		
+		
+		
+		
+		if pow_double == true:
+			var kick_instance2 = kick_shot.instance()
+			kick_instance2.pos = pos
+			kick_instance2.facing = facing
+			
+			if pos == 0:
+				kick_instance2.extra_position = Vector2(32*facing, -16)
+			else:
+				if pos == -1:
+					kick_instance2.extra_position = Vector2(22*facing, -32)
+				elif pos == 1:
+					kick_instance2.extra_position = Vector2(20*facing,0)
+			get_parent().add_child(kick_instance2)
+
+
+func _on_Area_body_entered(body):
+	if body.is_in_group("hurtful"):
+		if input.y != 0:
+			body.ouch(10,Vector2(200*facing,250*input.y))#damage, knockback
+		else:
+			body.ouch(10,Vector2(200*facing,-100))#damage, knockback
+		
+		if !pow_nostop: motion.x /= 10
+		
+		if !pow_piercing: $Area/Col.disabled = true
+
+################################################################################
+
+
+
+
+
+################################################################################
+
+var HP = 40
+
+func ouch(damage,knockback):
+	change_state(STATES.OUCH)
+	motion = lerp(motion,Vector2(0,0),DEACCEL)
+	#motion.x += knockback.x
+	#motion.y += knockback.y
+	
+	$AniPlay.stop()
+	$AniPlay.playback_speed = 1
+	$AniPlay.play("ouch")
+	
+	HP -= damage
+	if HP < 1:
+		pass
+
+################################################################################
 
 
 
 
 
 
-
-
-
-
-
-
-
-
+################################################################################
 
 func is_on_floor_or_wall():
 	if is_on_floor(): return true
@@ -363,17 +420,16 @@ func is_on_floor_or_wall():
 
 
 
-func _draw():
+func _draw():#speedometer
 	var adjust = -Vector2(-OS.window_size.x/3 * 1/Global.zoom,-OS.window_size.y/3 * 1/Global.zoom)
 	var pointy
 	
-	#motion.x = 800
 	
-	if abs(motion.x) > 800: pointy = Vector2(-100* 1/Global.zoom,0).rotated(800*0.004) + adjust
+	if abs(motion.x) > 790: pointy = Vector2(-100* 1/Global.zoom,0).rotated(PI) + adjust
 	else:                   pointy = Vector2(-100* 1/Global.zoom,0).rotated(abs(motion.x)*0.004) + adjust
 		
 	
-	draw_line(adjust,pointy,Color(1,1,1),1/Global.zoom)
+	draw_line(adjust,pointy,Color8(252,84,84),1/Global.zoom)
 
 
 
@@ -386,3 +442,4 @@ func noclip():
 	if Input.is_action_just_pressed("bug_noclip"):
 		$ColPoly.disabled = false
 		change_state(STATES.IDLE)
+

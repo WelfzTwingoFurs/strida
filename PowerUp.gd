@@ -24,7 +24,13 @@ func _on_Area2D_body_entered(body):
 		elif id == 2:
 			body.pow_motion += 1
 		elif id == 3:
-			body.pow_scale += 0.5
+			body.pow_scale += 1
+		elif id == 4:
+			body.pow_double = true
+		elif id == 5:
+			body.pow_piercing = true
+		elif id == 6:
+			body.pow_nostop = true
 		
-		Global.audio.SHOOTs()
+		Global.audio.GETSMALLs()
 		queue_free()

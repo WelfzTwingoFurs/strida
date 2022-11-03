@@ -1,12 +1,12 @@
 extends AnimationPlayer
 
-export var dont = false
+#export var dont = false
 
 func _ready():
-	if !dont:
-		play("_ready")
-	else:
-		queue_free()
+	#if !dont:
+	play("_ready")
+	#else:
+	#	queue_free()
 
 #var pause = false
 #
