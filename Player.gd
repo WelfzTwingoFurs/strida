@@ -20,6 +20,8 @@ func change_state(new_state):
 
 func _ready():
 	Global.player = self
+	$Speedo.visible = true
+	$Health.visible = true
 
 func _physics_process(_delta):
 	match state:
@@ -61,6 +63,11 @@ func _physics_process(_delta):
 	
 	########################################################################
 	
+	if $Sprite.frame == 30:# or $Sprite.frame == 31:
+		$EffectPlay.play("_ready")
+	else:
+		$EffectPlay.stop()
+		$Sprite.visible = true
 	
 	
 	########################################################################
@@ -265,6 +272,7 @@ export var pow_scale = 2
 export var pow_double = true
 export var pow_piercing = true
 export var pow_nostop = true
+export var pow_damage = 10
 
 func kick():
 	$AniPlay.playback_speed = 1
@@ -371,13 +379,14 @@ func kick_shoot(pos):
 func _on_Area_body_entered(body):
 	if body.is_in_group("hurtful"):
 		if input.y != 0:
-			body.ouch(10,Vector2(200*facing,250*input.y))#damage, knockback
+			body.ouch(pow_damage,Vector2(200*facing,250*input.y))#damage, knockback
 		else:
-			body.ouch(10,Vector2(200*facing,-100))#damage, knockback
+			body.ouch(pow_damage,Vector2(200*facing,-100))#damage, knockback
+		
 		
 		if !pow_nostop: motion.x /= 10
 		
-		if !pow_piercing: $Area/Col.disabled = true
+		if !pow_piercing: $Area/Col.set_deferred("disabled",true)
 
 ################################################################################
 
@@ -387,13 +396,13 @@ func _on_Area_body_entered(body):
 
 ################################################################################
 
-var HP = 40
+var HP = 150
 
 func ouch(damage,knockback):
 	change_state(STATES.OUCH)
 	motion = lerp(motion,Vector2(0,0),DEACCEL)
-	#motion.x += knockback.x
-	#motion.y += knockback.y
+	motion.x += knockback.x
+	motion.y += knockback.y
 	
 	$AniPlay.stop()
 	$AniPlay.playback_speed = 1
@@ -401,7 +410,8 @@ func ouch(damage,knockback):
 	
 	HP -= damage
 	if HP < 1:
-		pass
+		$AniPlay.stop()
+		change_state(STATES.NOCLIP)
 
 ################################################################################
 
@@ -424,12 +434,28 @@ func _draw():#speedometer
 	var adjust = -Vector2(-OS.window_size.x/3 * 1/Global.zoom,-OS.window_size.y/3 * 1/Global.zoom)
 	var pointy
 	
+#	for n in 180:
+#		if n > 0:
+#			pointy = Vector2(-100* 1/Global.zoom,0).rotated(n*PI/180) + adjust
+#			draw_line(adjust,pointy,Color8(0,0,0),1/Global.zoom)
+	
 	
 	if abs(motion.x) > 790: pointy = Vector2(-100* 1/Global.zoom,0).rotated(PI) + adjust
-	else:                   pointy = Vector2(-100* 1/Global.zoom,0).rotated(abs(motion.x)*0.004) + adjust
-		
+	else:
+		#pointy = Vector2(-100* 1/Global.zoom,0).rotated(abs(motion.x)*0.004) + adjust
+		pointy = Vector2(-33.3,0).rotated(abs(motion.x)*0.004) + adjust
 	
+	$Speedo.position = adjust - Vector2(0,$Speedo.texture.get_height()/2)
+	draw_line(adjust,pointy,Color8(168,0,0),1/Global.zoom)
+	
+	
+	
+	adjust = -Vector2(OS.window_size.x/3 * 1/Global.zoom,-OS.window_size.y/3 * 1/Global.zoom)
+	pointy = Vector2(-33.3,0).rotated(HP*0.0107) + adjust
+	
+	$Health.position = adjust - Vector2(0,$Health.texture.get_height()/2)
 	draw_line(adjust,pointy,Color8(252,84,84),1/Global.zoom)
+
 
 
 

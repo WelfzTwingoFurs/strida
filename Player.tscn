@@ -1,9 +1,11 @@
-[gd_scene load_steps=21 format=2]
+[gd_scene load_steps=23 format=2]
 
 [ext_resource path="res://Player.png" type="Texture" id=1]
 [ext_resource path="res://Player.gd" type="Script" id=2]
 [ext_resource path="res://GlobalAudio.gd" type="Script" id=3]
 [ext_resource path="res://Player-console.gd" type="Script" id=4]
+[ext_resource path="res://meter speeder.png" type="Texture" id=5]
+[ext_resource path="res://meter health.png" type="Texture" id=6]
 
 [sub_resource type="Animation" id=1]
 resource_name = "kickhigh"
@@ -327,7 +329,7 @@ tracks/3/keys = {
 "values": [ true, false, true ]
 }
 
-[sub_resource type="Animation" id=15]
+[sub_resource type="Animation" id=7]
 resource_name = "ouch"
 length = 0.35
 tracks/0/type = "value"
@@ -368,37 +370,20 @@ tracks/2/keys = {
 "update": 1,
 "values": [ 0 ]
 }
-tracks/3/type = "method"
-tracks/3/path = NodePath("EffectPlay")
+tracks/3/type = "value"
+tracks/3/path = NodePath("Sprite:visible")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/imported = false
 tracks/3/enabled = true
 tracks/3/keys = {
-"times": PoolRealArray( 0, 0.2 ),
-"transitions": PoolRealArray( 1, 1 ),
-"values": [ {
-"args": [ "_ready", -1, 1.0, false ],
-"method": "play"
-}, {
-"args": [ true ],
-"method": "stop"
-} ]
-}
-tracks/4/type = "value"
-tracks/4/path = NodePath("Sprite:visible")
-tracks/4/interp = 1
-tracks/4/loop_wrap = true
-tracks/4/imported = false
-tracks/4/enabled = true
-tracks/4/keys = {
 "times": PoolRealArray( 0.2 ),
 "transitions": PoolRealArray( 1 ),
 "update": 1,
 "values": [ true ]
 }
 
-[sub_resource type="Animation" id=7]
+[sub_resource type="Animation" id=8]
 length = 0.8
 loop = true
 tracks/0/type = "value"
@@ -431,7 +416,7 @@ tracks/1/keys = {
 } ]
 }
 
-[sub_resource type="Animation" id=8]
+[sub_resource type="Animation" id=9]
 length = 0.4
 loop = true
 tracks/0/type = "value"
@@ -461,7 +446,7 @@ tracks/1/keys = {
 } ]
 }
 
-[sub_resource type="Animation" id=9]
+[sub_resource type="Animation" id=10]
 length = 0.4
 loop = true
 tracks/0/type = "value"
@@ -491,7 +476,7 @@ tracks/1/keys = {
 } ]
 }
 
-[sub_resource type="Animation" id=10]
+[sub_resource type="Animation" id=11]
 length = 0.4
 loop = true
 tracks/0/type = "value"
@@ -521,7 +506,7 @@ tracks/1/keys = {
 } ]
 }
 
-[sub_resource type="Animation" id=11]
+[sub_resource type="Animation" id=12]
 length = 0.4
 loop = true
 tracks/0/type = "value"
@@ -551,7 +536,7 @@ tracks/1/keys = {
 } ]
 }
 
-[sub_resource type="Animation" id=12]
+[sub_resource type="Animation" id=13]
 length = 0.4
 loop = true
 tracks/0/type = "value"
@@ -581,7 +566,7 @@ tracks/1/keys = {
 } ]
 }
 
-[sub_resource type="Animation" id=13]
+[sub_resource type="Animation" id=14]
 length = 0.4
 loop = true
 tracks/0/type = "value"
@@ -614,7 +599,7 @@ tracks/1/keys = {
 } ]
 }
 
-[sub_resource type="Animation" id=16]
+[sub_resource type="Animation" id=15]
 resource_name = "_ready"
 length = 0.002
 loop = true
@@ -631,7 +616,7 @@ tracks/0/keys = {
 "values": [ true, false ]
 }
 
-[sub_resource type="CircleShape2D" id=14]
+[sub_resource type="CircleShape2D" id=16]
 radius = 11.0001
 
 [node name="Player" type="KinematicBody2D" groups=[
@@ -647,24 +632,35 @@ anims/kicklow = SubResource( 3 )
 anims/kicklowair = SubResource( 4 )
 anims/kickmid = SubResource( 5 )
 anims/kickmidair = SubResource( 6 )
-anims/ouch = SubResource( 15 )
-anims/walk = SubResource( 7 )
-anims/walk1 = SubResource( 8 )
-anims/walk2 = SubResource( 9 )
-anims/walk3 = SubResource( 10 )
-anims/walkslope1 = SubResource( 11 )
-anims/walkslope2 = SubResource( 12 )
-anims/walkslope3 = SubResource( 13 )
+anims/ouch = SubResource( 7 )
+anims/walk = SubResource( 8 )
+anims/walk1 = SubResource( 9 )
+anims/walk2 = SubResource( 10 )
+anims/walk3 = SubResource( 11 )
+anims/walkslope1 = SubResource( 12 )
+anims/walkslope2 = SubResource( 13 )
+anims/walkslope3 = SubResource( 14 )
 
 [node name="EffectPlay" type="AnimationPlayer" parent="."]
-anims/_ready = SubResource( 16 )
+anims/_ready = SubResource( 15 )
 
 [node name="Sprite" type="Sprite" parent="."]
 position = Vector2( 0, -20 )
 texture = ExtResource( 1 )
 hframes = 10
 vframes = 4
-frame = 31
+
+[node name="Speedo" type="Sprite" parent="."]
+visible = false
+position = Vector2( 0, -20 )
+z_index = -4094
+texture = ExtResource( 5 )
+
+[node name="Health" type="Sprite" parent="."]
+visible = false
+position = Vector2( 0, -20 )
+z_index = -4094
+texture = ExtResource( 6 )
 
 [node name="ColPoly" type="CollisionPolygon2D" parent="."]
 position = Vector2( 0, -32 )
@@ -673,11 +669,11 @@ polygon = PoolVector2Array( -8, 0, 8, 0, 8, 32, -8, 32 )
 [node name="Camera2D" type="Camera2D" parent="."]
 current = true
 
-[node name="Label" type="Label" parent="Camera2D"]
+[node name="Speed" type="Label" parent="Camera2D"]
 visible = false
 margin_right = 30.0
 margin_bottom = 20.0
-custom_colors/font_color = Color( 0.988235, 0.329412, 0.329412, 1 )
+custom_colors/font_color = Color( 0.658824, 0, 0, 1 )
 text = "cool"
 align = 1
 valign = 1
@@ -686,11 +682,25 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="Health" type="Label" parent="Camera2D"]
+visible = false
+margin_right = 30.0
+margin_bottom = 20.0
+custom_colors/font_color = Color( 0.988235, 0.329412, 0.329412, 1 )
+text = "rad"
+align = 1
+valign = 1
+script = ExtResource( 4 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+type = 1
+
 [node name="Area" type="Area2D" parent="."]
 
 [node name="Col" type="CollisionShape2D" parent="Area"]
 position = Vector2( 13, -30 )
-shape = SubResource( 14 )
+shape = SubResource( 16 )
 disabled = true
 
 [node name="Audio" type="AudioStreamPlayer2D" parent="."]

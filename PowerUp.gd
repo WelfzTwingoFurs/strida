@@ -31,6 +31,12 @@ func _on_Area2D_body_entered(body):
 			body.pow_piercing = true
 		elif id == 6:
 			body.pow_nostop = true
+		elif id == 7:
+			if body.HP < 140: body.HP += 10
+			else:
+				body.HP = 150
+		elif id == 8:
+			body.pow_damage += 10
 		
 		Global.audio.GETSMALLs()
 		queue_free()

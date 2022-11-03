@@ -115,9 +115,9 @@ func idle():
 				motion.x += facing
 				motion.x = lerp(motion.x,abs(TOP_SPEED/on_tile)*facing,ACCEL/10)
 			else: #too close, stop
-				motion.x = lerp(motion.x,0,DEACCEL/10)
+				motion.x = lerp(motion.x,0,DEACCEL/5)
 			
-			if (player.jump_check == false) && (sign(distanceXY.y) == -1) && (motion.x > TOP_SPEED*facing/2): #jump
+			if (player.jump_check == false) && (sign(distanceXY.y) == -1) && (abs(motion.x) > TOP_SPEED-1/2): #jump #(motion.x > TOP_SPEED*facing/2)
 				change_state(STATES.JUMP)
 			
 			
@@ -146,7 +146,7 @@ func audio_uw():
 
 func _on_Area_body_entered(body):
 	if body.is_in_group("player"):
-		body.ouch(10,Vector2(200*facing,-100))
+		body.ouch(25,Vector2(50*facing,-100))
 
 
 
@@ -197,7 +197,7 @@ func freeze():
 	if HP > 0:
 		change_state(STATES.OUCH)
 		
-		motion = Vector2(0,0)
+		motion /= 2
 		$AniPlay.stop()
 		$AniPlay.playback_speed = 1
 		$AniPlay.play("freeze")
@@ -228,8 +228,10 @@ func die_start():
 	boom()
 	$AniPlay.stop()
 	$Sprite.frame = 19
-	motion.x = 150*sign(motion.x)
-	motion.y = -300
+	#motion.x = 150*sign(motion.x)
+	#motion.y = -300
+	motion.x *= 2
+	motion.y *=2
 	Global.audio.BOOMBIGs()
 
 func boom():
