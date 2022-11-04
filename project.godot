@@ -10,9 +10,10 @@ config_version=4
 
 [application]
 
-config/name="We'll See"
+config/name="strida"
+config/description="strida!!!"
 run/main_scene="res://Node2D.tscn"
-boot_splash/image="res://Player.png"
+boot_splash/image="res://sprites/Player.png"
 boot_splash/fullsize=false
 boot_splash/use_filter=false
 boot_splash/bg_color=Color( 0, 0, 0, 1 )
@@ -158,6 +159,6 @@ quality/driver/driver_name="GLES2"
 2d/snapping/use_gpu_pixel_snap=true
 vram_compression/import_etc=true
 vram_compression/import_etc2=false
-environment/default_clear_color=Color( 0.501961, 0, 0.501961, 1 )
+environment/default_clear_color=Color( 0.658824, 0, 0.658824, 1 )
 environment/default_environment="res://default_env.tres"
 quality/dynamic_fonts/use_oversampling=false

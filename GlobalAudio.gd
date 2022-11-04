@@ -68,6 +68,11 @@ func KICKs():
 	set_stream(HITHEAD)
 	play()
 
+#const HITHEAD = preload("res://SFX/hithead.wav")
+func HITHEADs():
+	set_stream(HITHEAD)
+	play()
+
 const OUCH = preload("res://SFX/ouch.wav")
 func OUCHs():
 	set_stream(OUCH)
@@ -81,4 +86,14 @@ func UWs():
 const YAOW = preload("res://SFX/yaow.wav")
 func YAOWs():
 	set_stream(YAOW)
+	play()
+
+const BOOMTINNY = preload("res://SFX/boomtinny.wav")
+func BOOMTINNYs():
+	set_stream(BOOMTINNY)
+	play()
+
+const POW = preload("res://SFX/pow.wav")
+func POWs():
+	set_stream(POW)
 	play()
