@@ -1,4 +1,4 @@
-extends Sprite
+extends ColorRect
 
 func _ready():
 	material = material.duplicate()
@@ -7,7 +7,6 @@ func _ready():
 var timer = 0.0
 
 func _process(_delta):
-	#self.modulate.a = 0 if Engine.get_frames_drawn() % 2 == 0 else 1.0
 	material.set_shader_param("timer", timer)
 	if Input.is_action_pressed("ply_up"):
 		if Input.is_action_pressed("ctrl"):
@@ -19,10 +18,3 @@ func _process(_delta):
 			timer -= 0.0001
 		else:
 			timer -= 0.001#lerp(timer, 0.0, 0.05)
-	
-	$Label.text = str(timer)
-	
-	if timer < 0:
-		timer = 1
-	elif timer > 1:
-		timer = 0

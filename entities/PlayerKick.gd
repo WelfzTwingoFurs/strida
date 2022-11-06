@@ -30,10 +30,9 @@ func _physics_process(_delta):
 	
 	position = Global.player.position + extra_position
 	
-#	if Engine.get_frames_drawn() % 2 == 0:
-#		self.modulate.a = 0
-#	else:
-#		self.modulate.a = 1
+
+func _process(_delta):
+	$Sprite.modulate.a = 0 if Engine.get_frames_drawn() % 2 == 0 else 1
 
 
 func _on_Area_body_entered(body):

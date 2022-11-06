@@ -1,11 +1,32 @@
 extends StaticBody2D
 
+
 export var id = 0
 export var howmany = 1
 export var breakable = false
 export var break_after = false
 
+var dead = false
+var timer = 0
+
+#func _process(_delta):
+#	if dead:
+#		$Sprite.texture = load("res://sprites/deadblock.png")
+#		$Sprite.hframes = 1
+#		$Sprite.vframes = 1
+#		$Sprite.frame = 0
+#
+#		$Col.disabled = true
+#		timer += 0.0375
+#		#timer += 0.001
+#
+#		$Sprite.material.set_shader_param("timer", timer)
+#		if timer > 0.6:
+#			queue_free()
+
 func _ready():
+	#$Sprite.material = $Sprite.material.duplicate()
+	
 	if breakable:
 		$Sprite.frame = id + 10
 	else:
@@ -22,7 +43,8 @@ func hit(dir):
 		hit_anim(dir)
 	else:
 		if breakable or (break_after && id == 0):
-			boom()
+			boom()#dead = true#
+			#dead = true#
 			
 		else:
 			hit_anim(dir)

@@ -23,6 +23,12 @@ func _ready():
 	$Speedo.visible = true
 	$Health.visible = true
 
+func _process(_delta):
+	if $Sprite.frame == 30:# or $Sprite.frame == 31:
+		$Sprite.modulate.a = 0 if Engine.get_frames_drawn() % 2 == 0 else 1
+	else:
+		$Sprite.modulate.a = 1.0
+
 func _physics_process(_delta):
 	match state:
 		STATES.IDLE:
@@ -63,14 +69,6 @@ func _physics_process(_delta):
 	
 	########################################################################
 	
-	if $Sprite.frame == 30:# or $Sprite.frame == 31:
-		$EffectPlay.play("_ready")
-	else:
-		$EffectPlay.stop()
-		$Sprite.visible = true
-	
-	
-	########################################################################
 	
 	on_tile = Global.TileZone.get_cellv( Global.TileZone.world_to_map(position) )
 	
@@ -491,10 +489,10 @@ func _draw():#speedometer
 #			draw_line(adjust,pointy,Color8(0,0,0),1/Global.zoom)
 	
 	
-	if abs(motion.x) > 790: pointy = Vector2(-100* 1/Global.zoom,0).rotated(PI) + adjust
+	if abs(motion.x) > 1500: pointy = Vector2(-100*1/Global.zoom,0).rotated(1500*0.00211) + adjust
 	else:
 		#pointy = Vector2(-100* 1/Global.zoom,0).rotated(abs(motion.x)*0.004) + adjust
-		pointy = Vector2(-33.3,0).rotated(abs(motion.x)*0.004) + adjust
+		pointy = Vector2(-33.3,0).rotated(abs(motion.x)*0.002) + adjust
 	
 	$Speedo.position = adjust - Vector2(0,$Speedo.texture.get_height()/2)
 	draw_line(adjust,pointy,Color8(168,0,0),1/Global.zoom)
@@ -502,7 +500,7 @@ func _draw():#speedometer
 	
 	
 	adjust = -Vector2(OS.window_size.x/3 * 1/Global.zoom,-OS.window_size.y/3 * 1/Global.zoom)
-	pointy = Vector2(-33.3,0).rotated(HP*0.0107) + adjust
+	pointy = Vector2(-33.3,0).rotated(HP*0.0209) + adjust
 	
 	$Health.position = adjust - Vector2(0,$Health.texture.get_height()/2)
 	draw_line(adjust,pointy,Color8(252,84,84),1/Global.zoom)

@@ -4,26 +4,11 @@ uniform float timer = 0.0;
 uniform float rate = 110.0;
 
 void fragment() {
-	//if (COLOR.a != 0.0) {
-		//COLOR.a = 1.0-timer;
 	COLOR = texture(TEXTURE,UV);
-	vec2 new = UV;
+	vec2 new = 0.1-UV;
 	
-	if (COLOR.a != 0.0) {
-	if (int(UV.x*timer*rate) % 2 == 0) {
-	//if (int(UV.x*10.0) % 2 == 0) {
-		new.x = UV.x+timer;}
-	else {
-		new.x = UV.x-timer;}
 	
-	if (int(UV.y*timer*rate) % 2 == 0) {
-	//if (int(UV.y*10.0) % 2 == 0) {
-		new.y = UV.y+timer;}
-	else {
-		new.y = UV.y-timer;}
-	
-	COLOR = texture(TEXTURE,new);}
-	//	} 
+	COLOR = texture(TEXTURE,new);
 	}
 
 //UV.x/TEXTURE_PIXEL_SIZE.x to get the value of UV.x in actual pixels

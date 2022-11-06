@@ -76,12 +76,13 @@ func _physics_process(_delta):
 	################################################################################
 	
 	
-	
+
+
+func _process(_delta):
 	if $Sprite.frame == 9 or HP < 1 or $AniPlay.current_animation == "freeze":
-		$EffectPlay.play("_ready")
+		$Sprite.modulate.a = 0 if Engine.get_frames_drawn() % 2 == 0 else 1
 	else:
-		$EffectPlay.stop()
-		$Sprite.visible = true
+		$Sprite.modulate.a = 1.0
 	
 
 
@@ -90,13 +91,9 @@ func _physics_process(_delta):
 
 
 
-
+var chasing = 0
 
 func idle():
-	if abs(distanceA) < 40: #close, attack
-		change_state(STATES.ATTACK)
-	
-	
 	if is_on_floor_or_wall():
 		if abs(motion.x) < 1:
 			$AniPlay.stop()
@@ -110,16 +107,34 @@ func idle():
 		
 		
 		
-		if (abs(distanceXY.x) < abs(get_viewport().size.x/2)) && (abs(distanceXY.y) < abs(get_viewport().size.y/2)): #in screen, walk
-			facing = sign(distanceXY.x)
-			if abs(distanceXY.x) > 25:
-				motion.x += facing
-				motion.x = lerp(motion.x,abs(TOP_SPEED/on_tile)*facing,ACCEL/10)
-			else: #too close, stop
-				motion.x = lerp(motion.x,0,DEACCEL/5)
+		if (abs(distanceXY.x) < abs(get_viewport().size.x/2)) && (abs(distanceXY.y) < abs(get_viewport().size.y/2)): #player in screen range
+			if chasing < 1: #timer 0, idle but look out
+				motion.x = lerp(motion.x,0,DEACCEL/10)
+				$Vision.cast_to = distanceXY #cast to player!
+				if $Vision.is_colliding() && $Vision.get_collider().is_in_group("player"):
+					chasing = 50 #we got a hit, reset timer
+				
 			
-			if (player.jump_check == false) && (sign(distanceXY.y) == -1) && (abs(motion.x) > TOP_SPEED-1/2): #jump #(motion.x > TOP_SPEED*facing/2)
-				change_state(STATES.JUMP)
+			else:#if chasing > 0:
+				if !$Vision.is_colliding() or ($Vision.is_colliding() && !$Vision.get_collider().is_in_group("player")): #player outta sight
+					$Vision.cast_to = distanceXY #cast to player!
+					chasing -= 1 #interest timer is ticking down
+				else:
+					chasing = 50 #saw 'em again, reset timer
+				
+				
+				if abs(distanceA) < 40: #close, attack
+					change_state(STATES.ATTACK)
+				
+				facing = sign(distanceXY.x)
+				if abs(distanceXY.x) > 25:
+					motion.x += facing
+					motion.x = lerp(motion.x,abs(TOP_SPEED/on_tile)*facing,ACCEL/10)
+				else: #too close, stop
+					motion.x = lerp(motion.x,0,DEACCEL/5)
+				
+				if (player.jump_check == false) && (sign(distanceXY.y) == -1) && (abs(motion.x) > TOP_SPEED-1/2): #jump #(motion.x > TOP_SPEED*facing/2)
+					change_state(STATES.JUMP)
 			
 			
 			
@@ -214,18 +229,18 @@ func freeze():
 ################################################################################
 
 const boom_shot = preload("res://entities/Boom.tscn")
-export var timer = 0
+export var timer = 0 #used for sprite explosion in shader
 
 func die():
 	change_state(STATES.DIE)
 	timer += 0.01
 	
 	$Sprite.material.set_shader_param("timer", timer)
-	if timer > 0.725:
+	if timer > 0.5:
 		queue_free()
-	elif (timer > 0.3625 && (is_on_floor() or is_on_ceiling() or is_on_wall())):
-		boom()
-		queue_free()
+	#elif (timer > 0.25 && (is_on_floor() or is_on_ceiling() or is_on_wall())):
+	#	boom()
+	#	queue_free()
 
 
 func die_start():

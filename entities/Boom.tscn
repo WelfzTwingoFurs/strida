@@ -2,6 +2,7 @@
 
 [ext_resource path="res://sprites/boom.png" type="Texture" id=1]
 [ext_resource path="res://entities/AnimationPlayer _ready.gd" type="Script" id=2]
+[ext_resource path="res://entities/Spriteflicker.gd" type="Script" id=3]
 
 [sub_resource type="Animation" id=1]
 resource_name = "_ready"
@@ -32,48 +33,14 @@ tracks/1/keys = {
 "method": "queue_free"
 } ]
 }
-tracks/2/type = "method"
-tracks/2/path = NodePath("EffectPlay")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"values": [ {
-"args": [ "_ready", -1, 1.0, false ],
-"method": "play"
-} ]
-}
-
-[sub_resource type="Animation" id=2]
-resource_name = "_ready"
-length = 0.002
-loop = true
-tracks/0/type = "value"
-tracks/0/path = NodePath(".:visible")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0, 0.001 ),
-"transitions": PoolRealArray( 1, 1 ),
-"update": 1,
-"values": [ true, false ]
-}
 
 [node name="Boom" type="Sprite"]
 position = Vector2( 0, -10 )
 z_index = -4095
 texture = ExtResource( 1 )
 hframes = 7
-frame = 4
+script = ExtResource( 3 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/_ready = SubResource( 1 )
 script = ExtResource( 2 )
-
-[node name="EffectPlay" type="AnimationPlayer" parent="."]
-anims/_ready = SubResource( 2 )
