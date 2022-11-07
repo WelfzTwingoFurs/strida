@@ -24,7 +24,7 @@ func _ready():
 	$Health.visible = true
 
 func _process(_delta):
-	if $Sprite.frame == 30:# or $Sprite.frame == 31:
+	if $Sprite.frame == 30 or state == 2:# or $Sprite.frame == 31:
 		$Sprite.modulate.a = 0 if Engine.get_frames_drawn() % 2 == 0 else 1
 	else:
 		$Sprite.modulate.a = 1.0
@@ -395,9 +395,12 @@ func kick_shoot(pos):
 
 
 func _on_Area_body_entered(body):
-	if body.is_in_group("hurtful"):
+	if body.is_in_group("hurtful") && body.HP > 0:
 		if input.y != 0:
-			body.ouch(pow_damage,Vector2(200*facing,250*input.y))#damage, knockback
+			if input.y == -1:
+				body.ouch(pow_damage,Vector2(50*facing,300*input.y))#damage, knockback
+			else:
+				body.ouch(pow_damage,Vector2(300*facing,-50))#damage, knockback
 		else:
 			body.ouch(pow_damage,Vector2(200*facing,-100))#damage, knockback
 		
@@ -424,7 +427,7 @@ func _on_Area_body_entered(body):
 
 var HP = 150
 
-func ouch(damage,knockback):
+func ouch(damage,knockback,timer):
 	$Step/Col.set_deferred("disabled", true)
 	change_state(STATES.OUCH)
 	motion = lerp(motion,Vector2(0,0),DEACCEL)
@@ -432,11 +435,12 @@ func ouch(damage,knockback):
 	motion.y += knockback.y
 	
 	$AniPlay.stop()
-	$AniPlay.playback_speed = 1
+	$AniPlay.playback_speed = timer
 	$AniPlay.play("ouch")
 	
 	HP -= damage
 	if HP < 1:
+		Global.audio.GETBIGs()
 		$AniPlay.stop()
 		change_state(STATES.NOCLIP)
 
@@ -449,8 +453,8 @@ func ouch(damage,knockback):
 
 func _on_Step_body_entered(body): #step
 	if position.y < body.position.y: 
-		if body.is_in_group("freezeful") && body.state != 3: #step on enemies like Rygar
-			motion.y = -JUMP
+		if body.is_in_group("freezeful") && body.state != 3 && body.position.y > position.y && sign(motion.y) == 1: #step on enemies like Rygar
+			motion.y = -JUMP#-abs(motion.y)/2
 			body.wave_freezetime = pow_freezetime
 			body.freeze()
 		elif body.is_in_group("headable") && (body.breakable == true && body.howmany == 0): #step-kill blocks when standing on it
@@ -461,6 +465,10 @@ func _on_Head_body_entered(body): #hit blocks like mario
 	if body.is_in_group("headable"):
 		motion.y = 0
 		body.hit(0)
+	
+	elif body.is_in_group("hurtful") && (body.position.y < position.y) && sign(motion.y) == -1 && body.HP > 0:
+		motion.y = 0
+		body.ouch(pow_damage,Vector2(facing,-200))#damage, knockback
 
 
 
@@ -510,6 +518,7 @@ func _draw():#speedometer
 
 
 func noclip():
+	HP = 150
 	$Step/Col.disabled = true
 	$ColPoly.disabled = true
 	$Area/Col.disabled = true

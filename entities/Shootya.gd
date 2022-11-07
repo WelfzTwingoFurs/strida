@@ -4,10 +4,10 @@ enum STATES {IDLE,ATTACK,JUMP,OUCH,DIE}
 export(int) var state = STATES.IDLE
 var motion = Vector2(0,0)
 
-const TOP_SPEED = 175
-const ACCEL = 0.5
-const DEACCEL = 0.25
-const JUMP = 250
+const TOP_SPEED = 100
+const ACCEL = 0.2
+const DEACCEL = 0.5
+const JUMP = 350
 const GRAVITY = 10
 
 
@@ -37,7 +37,6 @@ func _physics_process(_delta):
 		STATES.OUCH:
 			if is_on_floor():
 				motion.x = lerp(motion.x,0,DEACCEL/10)
-			pass
 		STATES.DIE:
 			die()
 	
@@ -48,7 +47,8 @@ func _physics_process(_delta):
 	
 	if facing != 0:
 		$Sprite.scale.x = facing
-		$Area/Col.position.x = 12*facing
+		$Behind.position.x = -9*facing
+		$Behind.cast_to.x = facing
 	distanceXY = player.position - position
 	distanceA = player.position.distance_to(position)
 	
@@ -92,83 +92,107 @@ func _process(_delta):
 
 
 var chasing = 0
+export var readyfire = false
 
 func idle():
-	if is_on_floor_or_wall():
-		if abs(motion.x) < 1:
-			$AniPlay.stop()
-			$Sprite.frame = 0
-		else:
-			$AniPlay.playback_speed = abs(motion.x/200)
+	if $AniPlay.current_animation != "draw" && $AniPlay.current_animation != "holster":#animation is busy
+		if abs(motion.x) < 1:#stopped
+			$AniPlay.playback_speed = 1
+			if chasing < 1 && readyfire: #player outta sight, still readyfire
+				if is_on_floor(): $AniPlay.play("holster") #holster
+			else: #player in sight, or not readyfire
+				$AniPlay.stop()
+				if readyfire: $Sprite.frame = 2
+				else: $Sprite.frame = 0
+			
+		else:#walk
+			$AniPlay.playback_speed = abs(motion.x/50)
 			$AniPlay.play("walk")
+	
+	
+	if (abs(distanceXY.x) < abs(get_viewport().size.x/2)) && (abs(distanceXY.y) < abs(get_viewport().size.y/2)): #player in screen range
+		if chasing < 1: #timer 0, idle but look out
+			motion.x = lerp(motion.x,0,DEACCEL/10)
+			$Vision.cast_to = distanceXY #cast to player!
+			if $Vision.is_colliding() && $Vision.get_collider().is_in_group("player"):
+				chasing = 50 #we got a hit, reset timer
 			
 		
-		
-		
-		
-		
-		if (abs(distanceXY.x) < abs(get_viewport().size.x/2)) && (abs(distanceXY.y) < abs(get_viewport().size.y/2)): #player in screen range
-			if chasing < 1: #timer 0, idle but look out
-				motion.x = lerp(motion.x,0,DEACCEL/10)
+		else:#if chasing > 0: chasing 'em
+			if !$Vision.is_colliding() or ($Vision.is_colliding() && !$Vision.get_collider().is_in_group("player")): #player outta sight
 				$Vision.cast_to = distanceXY #cast to player!
-				if $Vision.is_colliding() && $Vision.get_collider().is_in_group("player"):
-					chasing = 50 #we got a hit, reset timer
-				
+				chasing -= 1 #interest timer is ticking down
+			else:
+				chasing = 50 #saw 'em again, reset timer
 			
-			else:#if chasing > 0:
-				if !$Vision.is_colliding() or ($Vision.is_colliding() && !$Vision.get_collider().is_in_group("player")): #player outta sight
-					$Vision.cast_to = distanceXY #cast to player!
-					chasing -= 1 #interest timer is ticking down
-				else:
-					chasing = 50 #saw 'em again, reset timer
+			
+			facing = sign(distanceXY.x)
+			
+			if (abs(distanceXY.y) < 20 && abs(distanceXY.x) > 100): #close in Y, far in X, attack
+				if abs(distanceXY.x) < 200: #too far
+					change_state(STATES.ATTACK)
+				else: #walk there
+					motion.x = lerp(motion.x,abs(TOP_SPEED/on_tile)*facing,ACCEL)
+					
+			
+			
+			if abs(distanceXY.x) > 100: #far in X, stop
+				motion.x = lerp(motion.x,0,DEACCEL/5)
+			
+			else: #too close, step away
+				readyfire = true
+				motion.x = lerp(motion.x,abs(TOP_SPEED/on_tile)*-facing,ACCEL/10)
 				
-				
-				if abs(distanceA) < 40: #close, attack
+				if $Behind.is_colliding(): #wall behind us, skip all and shoot
 					change_state(STATES.ATTACK)
 				
-				facing = sign(distanceXY.x)
-				if abs(distanceXY.x) > 25:
-					motion.x += facing
-					motion.x = lerp(motion.x,abs(TOP_SPEED/on_tile)*facing,ACCEL/10)
-				else: #too close, stop
-					motion.x = lerp(motion.x,0,DEACCEL/5)
-				
-				#if (player.jump_check == false) && (sign(distanceXY.y) == -1) && (abs(motion.x) > TOP_SPEED-1/2): #jump #(motion.x > TOP_SPEED*facing/2)
-				if (player.jump_check == false) && (sign(distanceXY.y) == -1) && (abs(motion.x) > TOP_SPEED-1/2): #jump #(motion.x > TOP_SPEED*facing/2)
-					change_state(STATES.JUMP)
 			
-			
-			
-		else: #out of screen, stop walking
-			motion.x = lerp(motion.x,0,DEACCEL/10)
+			#if (player.jump_check == false) && (sign(distanceXY.y) == -1) && (abs(motion.x) > TOP_SPEED-1/2): #jump #(motion.x > TOP_SPEED*facing/2)
+			if (sign(distanceXY.y) == -1) && abs(distanceXY.y) > 20 && is_on_floor():#&& abs(distanceXY.x) > 100:# && readyfire:
+				readyfire = true
+				change_state(STATES.JUMP)
 		
+		
+		
+	else: #out of screen, stop walking
+		motion.x = lerp(motion.x,0,DEACCEL/10)
+	
 		########################################################################
-	else:
-		motion.x = lerp(motion.x,0,DEACCEL/100)
-		$AniPlay.stop()
-		$Sprite.frame = 5
-	
-	
 
 func audio_step():
 	Global.audio.STEPs()
 
 ################################################################################
 
-
 func attack():
+	facing = sign(distanceXY.x)
+	chasing -= 1
 	motion.x = lerp(motion.x,0,DEACCEL)
-	$AniPlay.playback_speed = 1
-	$AniPlay.play("attack")
-
-func audio_uw():
-	Global.audio.UWs()
-
-func _on_Area_body_entered(body):
-	if body.is_in_group("player"):
-		body.ouch(25,Vector2(50*facing,-100),1)
+	
+	if !readyfire:
+		if is_on_floor(): $AniPlay.play("draw")#readyfire true anim
+	else:
+		$AniPlay.playback_speed = 1
+		if is_on_floor():
+			if $Behind.is_colliding(): $AniPlay.play("shoot2")
+			else: $AniPlay.play("shoot")
+		else: $AniPlay.play("shootair")
 		
-		motion += Vector2(500*-facing,-100)
+
+func shoot_lazer():
+	audio_shoot()
+	lazer()
+
+func audio_shoot():
+	Global.audio.YAOWs()
+
+const lazer_shot = preload("res://entities/Shootya-lazer.tscn")
+
+func lazer():
+	var boom_instance = lazer_shot.instance()
+	boom_instance.facing = facing
+	boom_instance.position = position + Vector2(facing*24, -22)
+	get_parent().add_child(boom_instance)
 
 
 
@@ -190,12 +214,11 @@ func jump_do():
 
 ################################################################################
 
-onready var HP = 40
+onready var HP = 30
 
 func ouch(damage,knockback):
 	change_state(STATES.OUCH)
-	$Area/Col.set_deferred("disabled", true)
-	motion.x = knockback.x
+	motion.x = knockback.x/2
 	motion.y = knockback.y
 	
 	$AniPlay.stop()
@@ -219,7 +242,6 @@ var wave_freezetime = 1
 func freeze():
 	if state < 3:
 		change_state(STATES.OUCH)
-		$Area/Col.set_deferred("disabled", true)
 		
 		#if state != 4:
 		motion /= 3
@@ -251,7 +273,7 @@ func die():
 
 func die_start():
 	$AniPlay.stop()
-	$Sprite.texture = load("res://sprites/deadslashem.png")
+	$Sprite.texture = load("res://sprites/deadshootya.png")
 	$Sprite.hframes = 1
 	$Sprite.vframes = 1
 	$Sprite.frame = 0
