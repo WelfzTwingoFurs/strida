@@ -217,13 +217,12 @@ func idle():
 			
 			else:
 				#if on_tile < 1 or $Sprite.frame < 10: #dont jump if diagonal
-				$AniPlay.stop()
-				if sign(motion.y) == 1:
-					$Sprite.frame = 6
-					
-					
-				else:
-					$Sprite.frame = 5
+				if $AniPlay.current_animation != "fakekickup" && $AniPlay.current_animation != "fakekickdown":
+					$AniPlay.stop()
+					if sign(motion.y) == 1:
+						$Sprite.frame = 6
+					else:
+						$Sprite.frame = 5
 				#elif Input.is_action_pressed("ply_jump"):
 				#	$AniPlay.stop()
 				#	$Sprite.frame = 5 
@@ -288,7 +287,14 @@ export var pow_wavetime = 1
 export var pow_freezetime = 1
 
 func kick():
-	$Step/Col.disabled = true
+	if !is_on_floor():
+		if sign(motion.y) == 1:
+			$Head/Col.disabled = true
+			$Step/Col.disabled = false
+		else:
+			$Head/Col.disabled = false
+			$Step/Col.disabled = true
+		
 	#$AniPlay.playback_speed = 1
 	#don't re-do animation if only input.y is changed
 	if $AniPlay.current_animation != "kickhigh" && $AniPlay.current_animation != "kickmid" && $AniPlay.current_animation != "kicklow" && $AniPlay.current_animation != "kickhighair" && $AniPlay.current_animation != "kickmidair" && $AniPlay.current_animation != "kicklowair":
@@ -327,15 +333,15 @@ func kick_anim():
 	motion.x += facing*10 + input.x*10
 	#if is_on_floor():
 	if input.y == -1:
-		$Area/Col.position = Vector2(13*facing,-30)
+		$Area/Col.position = Vector2(11*facing,-32)
 		if is_on_floor(): $AniPlay.play("kickhigh")
 		else: $AniPlay.play("kickhighair")
 	elif input.y == 0:
-		$Area/Col.position = Vector2(18*facing,-16)
+		$Area/Col.position = Vector2(16*facing,-16)
 		if is_on_floor(): $AniPlay.play("kickmid")
 		else: $AniPlay.play("kickmidair")
 	elif input.y == 1:
-		$Area/Col.position = Vector2(14*facing,-1)
+		$Area/Col.position = Vector2(11*facing,0)
 		if is_on_floor(): $AniPlay.play("kicklow")
 		else: $AniPlay.play("kicklowair")
 #	else:
@@ -457,18 +463,23 @@ func _on_Step_body_entered(body): #step
 			motion.y = -JUMP#-abs(motion.y)/2
 			body.wave_freezetime = pow_freezetime
 			body.freeze()
+			$AniPlay.play("fakekickdown")
+		
 		elif body.is_in_group("headable") && (body.breakable == true && body.howmany == 0): #step-kill blocks when standing on it
 			motion.y = 0
 			body.hit(2)
+			$AniPlay.play("fakekickdown")
 
 func _on_Head_body_entered(body): #hit blocks like mario
 	if body.is_in_group("headable"):
 		motion.y = 0
 		body.hit(0)
+		$AniPlay.play("fakekickup")
 	
 	elif body.is_in_group("hurtful") && (body.position.y < position.y) && sign(motion.y) == -1 && body.HP > 0:
 		motion.y = 0
 		body.ouch(pow_damage,Vector2(facing,-200))#damage, knockback
+		$AniPlay.play("fakekickup")
 
 
 
@@ -497,7 +508,7 @@ func _draw():#speedometer
 #			draw_line(adjust,pointy,Color8(0,0,0),1/Global.zoom)
 	
 	
-	if abs(motion.x) > 1500: pointy = Vector2(-100*1/Global.zoom,0).rotated(1500*0.00211) + adjust
+	if abs(motion.x) > 1500: pointy = Vector2(-33.3,0).rotated(1500*0.00211) + adjust
 	else:
 		#pointy = Vector2(-100* 1/Global.zoom,0).rotated(abs(motion.x)*0.004) + adjust
 		pointy = Vector2(-33.3,0).rotated(abs(motion.x)*0.002) + adjust
@@ -512,6 +523,17 @@ func _draw():#speedometer
 	
 	$Health.position = adjust - Vector2(0,$Health.texture.get_height()/2)
 	draw_line(adjust,pointy,Color8(252,84,84),1/Global.zoom)
+	
+	
+	
+	#print(get_viewport().size)
+	#(640, 339)
+	
+	draw_line(Vector2(-320, -170), Vector2(320, -170), Color(1,1,1), 1) #¨
+	draw_line(Vector2(-320, 170), Vector2(320, 170), Color(1,1,1), 1) #_
+	
+	draw_line(Vector2(-320, 169), Vector2(-320, -170), Color(1,1,1), 1) #|_
+	draw_line(Vector2(321, 169), Vector2(321, -170), Color(1,1,1), 1) #_|
 
 
 

@@ -107,7 +107,10 @@ func idle():
 		
 		
 		
-		if (abs(distanceXY.x) < abs(get_viewport().size.x/2)) && (abs(distanceXY.y) < abs(get_viewport().size.y/2)): #player in screen range
+		#if (abs(distanceXY.x) < abs(get_viewport().size.x/2)) && (abs(distanceXY.y) < abs(get_viewport().size.y/2)): #player in screen range
+		if abs(distanceXY.x) < 320 && abs(distanceXY.y) < 170: #player in screen range
+			$Sprite.modulate = Color(1,1,1,1)
+			
 			if chasing < 1: #timer 0, idle but look out
 				motion.x = lerp(motion.x,0,DEACCEL/10)
 				$Vision.cast_to = distanceXY #cast to player!
@@ -140,7 +143,14 @@ func idle():
 			
 			
 		else: #out of screen, stop walking
-			motion.x = lerp(motion.x,0,DEACCEL/10)
+			if OS.get_window_size()/Global.zoom > Vector2(640, 340):
+				$Sprite.modulate = Color(0,0,0,1)
+			
+			if chasing < 1:
+				motion.x = lerp(motion.x,0,DEACCEL/10)
+			else:
+				chasing -= 1
+				motion.x = lerp(motion.x,abs(TOP_SPEED/on_tile)*facing,ACCEL/10)
 		
 		########################################################################
 	else:

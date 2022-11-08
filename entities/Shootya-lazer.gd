@@ -1,7 +1,7 @@
 extends KinematicBody2D
 
 func _process(_delta):#very colorful indeed!!
-	$Sprite.modulate.a = 0 if Engine.get_frames_drawn() % 2 == 0 else 1
+	modulate.a = 0 if Engine.get_frames_drawn() % 2 == 0 else 1
 	
 	if $Sprite.frame == 0:
 		$Sprite.frame = 0 if Engine.get_frames_drawn() % 2 == 0 else 1
@@ -49,7 +49,7 @@ func _physics_process(_delta):
 	$Sprite2.position = ready_pos - position
 	
 	
-	if is_on_floor() or is_on_wall() or is_on_wall():
+	if is_on_floor() or is_on_wall() or is_on_wall() or int(motion.x) == 0:
 		die()
 
 func _on_Area_body_entered(body):

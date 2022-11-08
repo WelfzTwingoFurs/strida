@@ -102,15 +102,25 @@ func idle():
 				if is_on_floor(): $AniPlay.play("holster") #holster
 			else: #player in sight, or not readyfire
 				$AniPlay.stop()
-				if readyfire: $Sprite.frame = 2
-				else: $Sprite.frame = 0
+				if is_on_floor():
+					if readyfire: $Sprite.frame = 2
+					else: $Sprite.frame = 0
+				else:
+					$Sprite.frame = 11
 			
 		else:#walk
-			$AniPlay.playback_speed = abs(motion.x/50)
-			$AniPlay.play("walk")
+			if is_on_floor():
+				$AniPlay.playback_speed = abs(motion.x/50)
+				if sign(motion.x) == facing: $AniPlay.play("walk")
+				else: $AniPlay.play("walkb")
+			else:
+				$Sprite.frame = 11
 	
 	
-	if (abs(distanceXY.x) < abs(get_viewport().size.x/2)) && (abs(distanceXY.y) < abs(get_viewport().size.y/2)): #player in screen range
+	#if (abs(distanceXY.x) < abs(get_viewport().size.x/2)) && (abs(distanceXY.y) < abs(get_viewport().size.y/2)): #player in screen range
+	if abs(distanceXY.x) < 320 && abs(distanceXY.y) < 170:
+		$Sprite.modulate = Color(1,1,1,1)
+		
 		if chasing < 1: #timer 0, idle but look out
 			motion.x = lerp(motion.x,0,DEACCEL/10)
 			$Vision.cast_to = distanceXY #cast to player!
@@ -128,8 +138,8 @@ func idle():
 			
 			facing = sign(distanceXY.x)
 			
-			if (abs(distanceXY.y) < 20 && abs(distanceXY.x) > 100): #close in Y, far in X, attack
-				if abs(distanceXY.x) < 200: #too far
+			if abs(distanceXY.x) > 100: #close in Y, far in X, attack
+				if abs(distanceXY.x) < 200 && abs(distanceXY.y) < 20: #too far
 					change_state(STATES.ATTACK)
 				else: #walk there
 					motion.x = lerp(motion.x,abs(TOP_SPEED/on_tile)*facing,ACCEL)
@@ -148,14 +158,21 @@ func idle():
 				
 			
 			#if (player.jump_check == false) && (sign(distanceXY.y) == -1) && (abs(motion.x) > TOP_SPEED-1/2): #jump #(motion.x > TOP_SPEED*facing/2)
-			if (sign(distanceXY.y) == -1) && abs(distanceXY.y) > 20 && is_on_floor():#&& abs(distanceXY.x) > 100:# && readyfire:
+			if (sign(distanceXY.y) == -1) && abs(distanceXY.y) > 20 && is_on_floor() && abs(distanceXY.x) < 200:#&& abs(distanceXY.x) > 100:# && readyfire:
 				readyfire = true
 				change_state(STATES.JUMP)
 		
 		
 		
 	else: #out of screen, stop walking
-		motion.x = lerp(motion.x,0,DEACCEL/10)
+		if OS.get_window_size()/Global.zoom > Vector2(640, 340):
+			$Sprite.modulate = Color(0,0,0,1)
+		
+		if chasing < 1:
+			motion.x = lerp(motion.x,0,DEACCEL/10)
+		else:
+			chasing -= 1
+			motion.x = lerp(motion.x,abs(TOP_SPEED/on_tile)*facing,ACCEL)
 	
 		########################################################################
 
@@ -217,6 +234,7 @@ func jump_do():
 onready var HP = 30
 
 func ouch(damage,knockback):
+	readyfire = true
 	change_state(STATES.OUCH)
 	motion.x = knockback.x/2
 	motion.y = knockback.y
