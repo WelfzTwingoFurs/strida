@@ -459,7 +459,7 @@ vframes = 2
 
 [node name="ColPoly" type="CollisionPolygon2D" parent="."]
 position = Vector2( 0, -32 )
-polygon = PoolVector2Array( -8, 0, 8, 0, 8, 32, -8, 32 )
+polygon = PoolVector2Array( 0, 0, 6, 16, 0, 32, -6, 16 )
 
 [node name="Vision" type="RayCast2D" parent="."]
 position = Vector2( 0, -24 )

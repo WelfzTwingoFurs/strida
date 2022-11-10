@@ -56,22 +56,22 @@ func _physics_process(_delta):
 	
 	on_tile = Global.TileZone.get_cellv( Global.TileZone.world_to_map(position) )
 	
-	if on_tile < 1: #straight floor or air
-		$ColPoly.polygon = [Vector2(-8,0), Vector2(8,0), Vector2(8,32), Vector2(-8,32)]
-	
-	elif on_tile == 1: #1x1
-		$ColPoly.polygon = [Vector2(-8,0), Vector2(8,0), Vector2(8,16), Vector2(-8,32)]
-	
-	elif on_tile == 2: #2x1
-		$ColPoly.polygon = [Vector2(-8,0), Vector2(8,0), Vector2(8,24), Vector2(-8,32)]
-	
-	elif on_tile == 3: #1x2
-		$ColPoly.polygon = [Vector2(-8,0), Vector2(8,0), Vector2(-8,32), Vector2(-8,32)]
-	
-	if Global.TileZone.is_cell_x_flipped( Global.TileZone.world_to_map(position).x, Global.TileZone.world_to_map(position).y ):
-		$ColPoly.scale.x = -1
-	else:
-		$ColPoly.scale.x = 1
+#	if on_tile < 1: #straight floor or air
+#		$ColPoly.polygon = [Vector2(-8,0), Vector2(8,0), Vector2(8,32), Vector2(-8,32)]
+#
+#	elif on_tile == 1: #1x1
+#		$ColPoly.polygon = [Vector2(-8,0), Vector2(8,0), Vector2(8,16), Vector2(-8,32)]
+#
+#	elif on_tile == 2: #2x1
+#		$ColPoly.polygon = [Vector2(-8,0), Vector2(8,0), Vector2(8,24), Vector2(-8,32)]
+#
+#	elif on_tile == 3: #1x2
+#		$ColPoly.polygon = [Vector2(-8,0), Vector2(8,0), Vector2(-8,32), Vector2(-8,32)]
+#
+#	if Global.TileZone.is_cell_x_flipped( Global.TileZone.world_to_map(position).x, Global.TileZone.world_to_map(position).y ):
+#		$ColPoly.scale.x = -1
+#	else:
+#		$ColPoly.scale.x = 1
 	
 	################################################################################
 	
