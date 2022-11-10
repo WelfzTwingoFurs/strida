@@ -233,14 +233,14 @@ func jump_do():
 
 onready var HP = 30
 
-func ouch(damage,knockback):
+func ouch(damage,knockback, time):
 	readyfire = true
 	change_state(STATES.OUCH)
 	motion.x = knockback.x/2
 	motion.y = knockback.y
 	
 	$AniPlay.stop()
-	$AniPlay.playback_speed = 1
+	$AniPlay.playback_speed = time
 	$AniPlay.play("ouch")
 	
 	HP -= damage
@@ -292,6 +292,7 @@ func die():
 func die_start():
 	$AniPlay.stop()
 	$Sprite.texture = load("res://sprites/deadshootya.png")
+	#$Sprite.position.y = 0
 	$Sprite.hframes = 1
 	$Sprite.vframes = 1
 	$Sprite.frame = 0

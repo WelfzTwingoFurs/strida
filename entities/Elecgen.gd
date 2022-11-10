@@ -4,18 +4,15 @@ enum STATES {IDLE,ATTACK,JUMP,OUCH,DIE}
 export(int) var state = STATES.IDLE
 var motion = Vector2(0,0)
 
-const TOP_SPEED = 175
-const ACCEL = 0.5
-const DEACCEL = 0.25
-const JUMP = 250
-const GRAVITY = 10
-
+const TOP_SPEED = 350
+const GRAVITY = 20
 
 
 func change_state(new_state):
 	state = new_state
 
 func _ready():
+	$Vision.enabled = true
 	player = Global.player
 	$Sprite.material = $Sprite.material.duplicate()
 
@@ -33,22 +30,25 @@ func _physics_process(_delta):
 		STATES.ATTACK:
 			attack()
 		STATES.JUMP:
-			jump()
+			pass
 		STATES.OUCH:
 			if is_on_floor():
-				motion.x = lerp(motion.x,0,DEACCEL/10)
-			pass
+				motion.x = lerp(motion.x,0,0.5)
 		STATES.DIE:
 			die()
 	
 	motion = move_and_slide(motion, Vector2(0,-1))
-	motion.y += GRAVITY
+	if $Sprite.frame != 3 && $Sprite.frame != 4 && $Sprite.frame != 5 && $Sprite.frame != 6 && $Sprite.frame != 7 && $Sprite.frame != 1 && $Sprite.frame != 2:
+		#$ColPoly.disabled = false
+		motion.y += GRAVITY
+	else:
+		#$ColPoly.disabled = true
+		motion.y = 0
 	
 	###########################################################################
 	
 	if facing != 0:
 		$Sprite.scale.x = facing
-		$Area/Col.position.x = 12*facing
 	distanceXY = player.position - position
 	distanceA = player.position.distance_to(position)
 	
@@ -79,7 +79,7 @@ func _physics_process(_delta):
 
 
 func _process(_delta):
-	if $Sprite.frame == 9 or HP < 1 or $AniPlay.current_animation == "freeze":
+	if $Sprite.frame == 7 or $Sprite.frame == 9 or HP < 1 or $AniPlay.current_animation == "freeze":
 		$Sprite.modulate.a = 0 if Engine.get_frames_drawn() % 2 == 0 else 1
 	else:
 		$Sprite.modulate.a = 1.0
@@ -94,128 +94,128 @@ func _process(_delta):
 var chasing = 0
 
 func idle():
-	if is_on_floor_or_wall():
-		if abs(motion.x) < 1:
+	$AniPlay.playback_speed = 1
+	$Vision.enabled = true 
+	motion.x = 0
+	
+	#if (abs(distanceXY.x) < abs(get_viewport().size.x/2)) && (abs(distanceXY.y) < abs(get_viewport().size.y/2)): #player in screen range
+	if abs(distanceXY.x) < 320 && abs(distanceXY.y) < 170: #player in screen range
+		$Sprite.modulate = Color(1,1,1,1)
+		$Vision.cast_to = distanceXY
+		
+		if $Vision.is_colliding() && $Vision.get_collider().is_in_group("player"):
+			chasing = true
+			facing = sign(distanceXY.x)
+			
+			if (abs(distanceXY.y) < 50): #close, attack
+				if Global.player.state == 3:
+					$AniPlay.play("attackquick")
+				else:
+					$AniPlay.play("attack")
+				
+				change_state(STATES.ATTACK)
+			else:
+				$AniPlay.stop()
+				$Sprite.frame = 0
+			
+			#if abs(distanceXY.x) < 10 && distanceXY.y > 5:
+			#	$AniPlay.play("shootdown")
+			#	change_state(STATES.ATTACK)
+		
+		else:#if chasing > 0:
 			$AniPlay.stop()
 			$Sprite.frame = 0
-		else:
-			$AniPlay.playback_speed = abs(motion.x/200)
-			$AniPlay.play("walk")
+			chasing = false
+			
 			
 		
 		
 		
-		
-		
-		#if (abs(distanceXY.x) < abs(get_viewport().size.x/2)) && (abs(distanceXY.y) < abs(get_viewport().size.y/2)): #player in screen range
-		if abs(distanceXY.x) < 320 && abs(distanceXY.y) < 170: #player in screen range
-			$Sprite.modulate = Color(1,1,1,1)
-			
-			if chasing < 1: #timer 0, idle but look out
-				motion.x = lerp(motion.x,0,DEACCEL/10)
-				$Vision.cast_to = distanceXY #cast to player!
-				if $Vision.is_colliding() && $Vision.get_collider().is_in_group("player"):
-					chasing = 50 #we got a hit, reset timer
-				
-			
-			else:#if chasing > 0:
-				if !$Vision.is_colliding() or ($Vision.is_colliding() && !$Vision.get_collider().is_in_group("player")): #player outta sight
-					$Vision.cast_to = distanceXY #cast to player!
-					chasing -= 1 #interest timer is ticking down
-				else:
-					chasing = 50 #saw 'em again, reset timer
-				
-				
-				if abs(distanceA) < 40: #close, attack
-					change_state(STATES.ATTACK)
-				
-				facing = sign(distanceXY.x)
-				if abs(distanceXY.x) > 25:
-					motion.x += facing
-					motion.x = lerp(motion.x,abs(TOP_SPEED/on_tile)*facing,ACCEL/10)
-				else: #too close, stop
-					motion.x = lerp(motion.x,0,DEACCEL/5)
-				
-				#if (player.jump_check == false) && (sign(distanceXY.y) == -1) && (abs(motion.x) > TOP_SPEED-1/2): #jump #(motion.x > TOP_SPEED*facing/2)
-				if (player.jump_check == false) && (sign(distanceXY.y) == -1) && (abs(motion.x) > TOP_SPEED-1/2): #jump #(motion.x > TOP_SPEED*facing/2)
-					change_state(STATES.JUMP)
-			
-			
-			
-		else: #out of screen, stop walking
-			if OS.get_window_size()/Global.zoom > Vector2(640, 340):
-				$Sprite.modulate = Color(0,0,0,1)
-			
-			if chasing < 1:
-				motion.x = lerp(motion.x,0,DEACCEL/10)
-			else:
-				chasing -= 1
-				motion.x = lerp(motion.x,abs(TOP_SPEED/on_tile)*facing,ACCEL/10)
-		
-		########################################################################
-	else:
-		motion.x = lerp(motion.x,0,DEACCEL/100)
+	else: #out of screen, stop walking
 		$AniPlay.stop()
-		$Sprite.frame = 5
-	
-	
-
-func audio_step():
-	Global.audio.STEPs()
+		$Sprite.frame = 0
+		if OS.get_window_size()/Global.zoom > Vector2(640, 340):
+			$Sprite.modulate = Color(0,0,0,1)
+		
+		chasing = false
+		
 
 ################################################################################
 
 
 func attack():
-	motion.x = lerp(motion.x,0,DEACCEL)
-	$AniPlay.playback_speed = 1
-	$AniPlay.play("attack")
-
-func audio_uw():
-	Global.audio.UWs()
+	$Vision.cast_to = Vector2(0,-9999)
+	if $Vision.cast_to.y == -9999 && $Vision.is_colliding() && $Vision.get_collider().is_in_group("player"):
+		$AniPlay.play("shootup")
+	
+	if !$AniPlay.is_playing():
+		if abs(distanceXY.x) > 320 or abs(distanceXY.y) > 170 or ($Vision.is_colliding() && !$Vision.get_collider().is_in_group("player")) or !$Vision.is_colliding():
+			change_state(STATES.IDLE)
+	
 
 func _on_Area_body_entered(body):
 	if body.is_in_group("player"):
-		body.ouch(25,Vector2(50*facing,-100),1)
+		body.ouch(35,Vector2(100*facing,-100),0.5)
+		$Vision.enabled = false
 		
-		motion += Vector2(500*-facing,-100)
+		if $AniPlay.current_animation == "attack":
+			motion += Vector2(500*-facing,-100)
+
+
+func charge():
+	motion.x = TOP_SPEED*facing
+
+func stop():
+	motion.x /= 2
+
+func shoot_lazer():
+	audio_shoot()
+	lazer(Vector2(facing,0))
+
+func shoot_lazer_up():
+	audio_shoot()
+	lazer(Vector2(0,-1))
+
+func shoot_lazer_down():
+	audio_shoot()
+	lazer(Vector2(0,1))
+
+func audio_shoot():
+	Global.audio.SHOOTs()
+
+const lazer_shot = preload("res://entities/Elecgen-Thunder.tscn")
+
+func lazer(dir):
+	var boom_instance = lazer_shot.instance()
+	boom_instance.facing.x = dir.x
+	boom_instance.facing.y = dir.y
+	boom_instance.position = position + Vector2(dir.x*24, -22)
+	get_parent().add_child(boom_instance)
+
 
 
 
 ################################################################################
-
-func jump():
-	motion.x = lerp(motion.x,0,DEACCEL/10)
-	$AniPlay.playback_speed = 1
-	$AniPlay.play("jump")
-
-func jump_do():
-	if is_on_floor_or_wall():
-		Global.audio.JUMPs()
-		motion.y -= JUMP
-
-
-
-
 
 ################################################################################
 
 onready var HP = 40
 
 func ouch(damage,knockback, time):
-	change_state(STATES.OUCH)
-	$Area/Col.set_deferred("disabled", true)
-	motion.x = knockback.x
-	motion.y = knockback.y
-	
-	$AniPlay.stop()
-	$AniPlay.playback_speed = time
-	$AniPlay.play("ouch")
-	
-	HP -= damage
-	if HP < 1:
-		die_start()
-		die()
+	if $Sprite.frame != 3 && $Sprite.frame != 4 && $Sprite.frame != 5 && $Sprite.frame != 6 && $Sprite.frame != 7:
+		change_state(STATES.OUCH)
+		$Area/Col.set_deferred("disabled", true)
+		motion.x = knockback.x*4.5
+		motion.y = knockback.y
+		
+		$AniPlay.stop()
+		$AniPlay.playback_speed = time
+		$AniPlay.play("ouch")
+		
+		HP -= damage
+		if HP < 1:
+			die_start()
+			die()
 
 func audio_boommed():
 	Global.audio.BOOMMEDs()
@@ -227,7 +227,7 @@ func audio_boommed():
 var wave_freezetime = 1
 
 func freeze():
-	if state < 3:
+	if state < 3 && $Sprite.frame != 3 && $Sprite.frame != 4 && $Sprite.frame != 5 && $Sprite.frame != 6 && $Sprite.frame != 7 && $Sprite.frame != 1 && $Sprite.frame != 2:
 		change_state(STATES.OUCH)
 		$Area/Col.set_deferred("disabled", true)
 		
@@ -254,20 +254,16 @@ func die():
 	$Sprite.material.set_shader_param("timer", timer)
 	if timer > 0.5:
 		queue_free()
-	#elif (timer > 0.25 && (is_on_floor() or is_on_ceiling() or is_on_wall())):
-	#	boom()
-	#	queue_free()
 
 
 func die_start():
 	$AniPlay.stop()
-	$Sprite.texture = load("res://sprites/deadslashem.png")
-	#$Sprite.position.y = 0
+	$Sprite.texture = load("res://sprites/deadelegen.png")
 	$Sprite.hframes = 1
 	$Sprite.vframes = 1
 	$Sprite.frame = 0
 	
-	motion.x *= 2
+	motion.x /= 2
 	motion.y *=2
 	
 	boom()

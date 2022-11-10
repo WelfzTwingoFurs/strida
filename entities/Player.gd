@@ -285,6 +285,7 @@ export var pow_damage = 10
 export var pow_kicktime = 1
 export var pow_wavetime = 1
 export var pow_freezetime = 1
+export var pow_kickstuntime = 1
 
 func kick():
 	if !is_on_floor():
@@ -399,16 +400,17 @@ func kick_shoot(pos):
 					kick_instance2.extra_position = Vector2(20*facing,0)
 			get_parent().add_child(kick_instance2)
 
+################################################################################
 
 func _on_Area_body_entered(body):
 	if body.is_in_group("hurtful") && body.HP > 0:
 		if input.y != 0:
 			if input.y == -1:
-				body.ouch(pow_damage,Vector2(50*facing,300*input.y))#damage, knockback
+				body.ouch(pow_damage,Vector2(50*facing,300*input.y),pow_kickstuntime)#damage, knockback, aniplay speed
 			else:
-				body.ouch(pow_damage,Vector2(300*facing,-50))#damage, knockback
+				body.ouch(pow_damage,Vector2(300*facing,-50),pow_kickstuntime)#damage, knockback, aniplay speed
 		else:
-			body.ouch(pow_damage,Vector2(200*facing,-100))#damage, knockback
+			body.ouch(pow_damage,Vector2(200*facing,-100),pow_kickstuntime)#damage, knockback, aniplay speed
 		
 		
 		if !pow_nostop: motion.x /= 10
@@ -425,6 +427,37 @@ func _on_Area_body_entered(body):
 
 ################################################################################
 
+func _on_Step_body_entered(body): #step
+	if position.y < body.position.y: 
+		if body.is_in_group("freezeful") && body.state != 3 && body.position.y > position.y && sign(motion.y) == 1: #step on enemies like Rygar
+			motion.y = -JUMP#-abs(motion.y)/2
+			body.wave_freezetime = pow_freezetime
+			body.freeze()
+			if state == 0:
+				$AniPlay.play("fakekickdown")
+		
+		elif body.is_in_group("headable") && (body.breakable == true && body.howmany == 0): #step-kill blocks when standing on it
+			motion.y = 0
+			body.hit(2)
+			if state == 0:
+				$AniPlay.play("fakekickdown")
+
+################################################################################
+
+func _on_Head_body_entered(body): #hit blocks like mario
+	if body.is_in_group("headable"):
+		motion.y = 0
+		body.hit(0)
+		$AniPlay.play("fakekickup")
+	
+	elif body.is_in_group("hurtful") && (body.position.y < position.y) && sign(motion.y) == -1 && body.HP > 0:
+		motion.y = 0
+		body.ouch(pow_damage,Vector2(facing,-200), pow_kickstuntime)#damage, knockback
+		$AniPlay.play("fakekickup")
+
+################################################################################
+
+
 
 
 
@@ -434,9 +467,11 @@ func _on_Area_body_entered(body):
 var HP = 150
 
 func ouch(damage,knockback,timer):
+	$Area/Col.set_deferred("disabled", true)
 	$Step/Col.set_deferred("disabled", true)
+	$Head/Col.set_deferred("disabled", true)
 	change_state(STATES.OUCH)
-	motion = lerp(motion,Vector2(0,0),DEACCEL)
+	#motion = lerp(motion,Vector2(0,0),DEACCEL)
 	motion.x += knockback.x
 	motion.y += knockback.y
 	
@@ -452,34 +487,16 @@ func ouch(damage,knockback,timer):
 
 ################################################################################
 
-
-
-
-
-
-func _on_Step_body_entered(body): #step
-	if position.y < body.position.y: 
-		if body.is_in_group("freezeful") && body.state != 3 && body.position.y > position.y && sign(motion.y) == 1: #step on enemies like Rygar
-			motion.y = -JUMP#-abs(motion.y)/2
-			body.wave_freezetime = pow_freezetime
-			body.freeze()
-			$AniPlay.play("fakekickdown")
-		
-		elif body.is_in_group("headable") && (body.breakable == true && body.howmany == 0): #step-kill blocks when standing on it
-			motion.y = 0
-			body.hit(2)
-			$AniPlay.play("fakekickdown")
-
-func _on_Head_body_entered(body): #hit blocks like mario
-	if body.is_in_group("headable"):
-		motion.y = 0
-		body.hit(0)
-		$AniPlay.play("fakekickup")
-	
-	elif body.is_in_group("hurtful") && (body.position.y < position.y) && sign(motion.y) == -1 && body.HP > 0:
-		motion.y = 0
-		body.ouch(pow_damage,Vector2(facing,-200))#damage, knockback
-		$AniPlay.play("fakekickup")
+func freeze(timer):
+	$Area/Col.set_deferred("disabled", true)
+	$Step/Col.set_deferred("disabled", true)
+	$Head/Col.set_deferred("disabled", true)
+	Global.audio.OUCHs()
+	change_state(STATES.OUCH)
+	motion /= 3
+	$AniPlay.stop()
+	$AniPlay.playback_speed = timer
+	$AniPlay.play("freeze")
 
 
 
@@ -488,7 +505,9 @@ func _on_Head_body_entered(body): #hit blocks like mario
 
 
 
-################################################################################
+
+
+
 
 func is_on_floor_or_wall():
 	if is_on_floor(): return true
@@ -496,7 +515,7 @@ func is_on_floor_or_wall():
 	
 	return false
 
-
+################################################################################
 
 func _draw():#speedometer
 	var adjust = -Vector2(-OS.window_size.x/3 * 1/Global.zoom,-OS.window_size.y/3 * 1/Global.zoom)
@@ -532,11 +551,11 @@ func _draw():#speedometer
 	draw_line(Vector2(-320, -170), Vector2(320, -170), Color(1,1,1), 1) #¨
 	draw_line(Vector2(-320, 170), Vector2(320, 170), Color(1,1,1), 1) #_
 	
-	draw_line(Vector2(-320, 169), Vector2(-320, -170), Color(1,1,1), 1) #|_
-	draw_line(Vector2(321, 169), Vector2(321, -170), Color(1,1,1), 1) #_|
+	draw_line(Vector2(-320, 170), Vector2(-320, -170), Color(1,1,1), 1) #|_
+	draw_line(Vector2(320, 170), Vector2(320, -170), Color(1,1,1), 1) #_|
 
 
-
+################################################################################
 
 
 func noclip():

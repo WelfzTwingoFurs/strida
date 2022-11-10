@@ -43,6 +43,8 @@ func _on_Area2D_body_entered(body):
 			body.pow_wavetime /= 1.5
 		elif id == 11: #freeze lasts longer
 			body.pow_freezetime /= 1.5
+		elif id == 12:
+			body.pow_kickstuntime /= 1.5
 		
 		Global.audio.GETMEDs()
 		queue_free()
