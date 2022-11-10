@@ -74,24 +74,28 @@ func _physics_process(_delta):
 	
 	#CHANGED x=8 TO x=6, y HAS BECOME INCORRECT, HOWEVER LESS 'STICKY' 'STIFFY' 'JANKY' SO KEEP IT
 	if on_tile < 1: #straight floor or air
-		$ColPoly.polygon = [Vector2(-6,0), Vector2(6,0), Vector2(6,32), Vector2(-6,32)]
+		#$ColPoly.polygon = [Vector2(-6,0), Vector2(6,0), Vector2(6,32), Vector2(-6,32)]
 		if is_on_floor(): #Only reset after landing
-			$Sprite.position = Vector2(0,-19)
+			#$Sprite.position = Vector2(0,-19)
+			$Sprite.position = Vector2(0,-20)
 	
 	elif on_tile == 1: #1x1
-		$ColPoly.polygon = [Vector2(-6,0), Vector2(6,0), Vector2(6,16), Vector2(-6,32)]
+		#$ColPoly.polygon = [Vector2(-6,0), Vector2(6,0), Vector2(6,16), Vector2(-6,32)]
 		if is_on_floor(): #Only reset after landing
-			$Sprite.position = Vector2(-1*$ColPoly.scale.x,-19)
+			#$Sprite.position = Vector2(-1*$ColPoly.scale.x,-19)
+			$Sprite.position = Vector2(6*$ColPoly.scale.x,-20)
 	
 	elif on_tile == 2: #2x1
-		$ColPoly.polygon = [Vector2(-6,0), Vector2(6,0), Vector2(6,24), Vector2(-6,32)]
+		#$ColPoly.polygon = [Vector2(-6,0), Vector2(6,0), Vector2(6,24), Vector2(-6,32)]
 		if is_on_floor(): #Only reset after landing
-			$Sprite.position = Vector2(-1*$ColPoly.scale.x,-19)
+			#$Sprite.position = Vector2(-1*$ColPoly.scale.x,-19)
+			$Sprite.position = Vector2(7*$ColPoly.scale.x,-20)
 	
 	elif on_tile == 3: #1x2
-		$ColPoly.polygon = [Vector2(-6,0), Vector2(6,0), Vector2(-6,32), Vector2(-6,32)]
+		#$ColPoly.polygon = [Vector2(-6,0), Vector2(6,0), Vector2(-6,32), Vector2(-6,32)]
 		if is_on_floor_or_wall(): #Only reset after landing
-			$Sprite.position = Vector2(-3*$ColPoly.scale.x, -19)
+			#$Sprite.position = Vector2(-3*$ColPoly.scale.x, -19)
+			$Sprite.position = Vector2(4*$ColPoly.scale.x, -20)
 	
 	
 	if Global.TileZone.is_cell_x_flipped( Global.TileZone.world_to_map(position).x, Global.TileZone.world_to_map(position).y ):

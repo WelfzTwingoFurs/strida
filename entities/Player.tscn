@@ -709,7 +709,7 @@ texture = ExtResource( 6 )
 
 [node name="ColPoly" type="CollisionPolygon2D" parent="."]
 position = Vector2( 0, -32 )
-polygon = PoolVector2Array( -6, 0, 6, 0, 6, 32, -6, 32 )
+polygon = PoolVector2Array( 0, 0, 6, 16, 0, 32, -6, 16 )
 
 [node name="Camera2D" type="Camera2D" parent="."]
 current = true
