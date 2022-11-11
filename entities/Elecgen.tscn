@@ -88,7 +88,7 @@ tracks/4/keys = {
 "values": [ true, false, true ]
 }
 
-[sub_resource type="Animation" id=9]
+[sub_resource type="Animation" id=2]
 resource_name = "attackquick"
 length = 1.8
 tracks/0/type = "value"
@@ -163,14 +163,13 @@ tracks/4/loop_wrap = true
 tracks/4/imported = false
 tracks/4/enabled = true
 tracks/4/keys = {
-"times": PoolRealArray( 0, 0.2, 1.3 ),
-"transitions": PoolRealArray( 1, 1, 1 ),
+"times": PoolRealArray( 0, 1.3 ),
+"transitions": PoolRealArray( 1, 1 ),
 "update": 1,
-"values": [ true, false, true ]
+"values": [ false, true ]
 }
 
-[sub_resource type="Animation" id=2]
-resource_name = "freeze"
+[sub_resource type="Animation" id=3]
 length = 1.3
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -209,8 +208,7 @@ tracks/2/keys = {
 "values": [ true ]
 }
 
-[sub_resource type="Animation" id=3]
-resource_name = "ouch"
+[sub_resource type="Animation" id=4]
 length = 0.6
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -275,7 +273,7 @@ tracks/4/keys = {
 "values": [ true ]
 }
 
-[sub_resource type="Animation" id=8]
+[sub_resource type="Animation" id=5]
 resource_name = "shootdown"
 length = 0.7
 tracks/0/type = "value"
@@ -329,8 +327,7 @@ tracks/3/keys = {
 "values": [ false, true ]
 }
 
-[sub_resource type="Animation" id=4]
-resource_name = "shootup"
+[sub_resource type="Animation" id=6]
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
 tracks/0/interp = 1
@@ -409,7 +406,7 @@ tracks/4/keys = {
 "values": [ true ]
 }
 
-[sub_resource type="Animation" id=5]
+[sub_resource type="Animation" id=7]
 length = 0.8
 loop = true
 tracks/0/type = "value"
@@ -425,12 +422,12 @@ tracks/0/keys = {
 "values": [ 3, 7, 4, 7, 5, 7, 6, 7 ]
 }
 
-[sub_resource type="ShaderMaterial" id=6]
+[sub_resource type="ShaderMaterial" id=8]
 shader = ExtResource( 3 )
 shader_param/timer = 0.0
 shader_param/rate = 110.0
 
-[sub_resource type="CapsuleShape2D" id=7]
+[sub_resource type="CapsuleShape2D" id=9]
 height = 28.0
 
 [node name="Elecgen" type="KinematicBody2D" groups=[
@@ -443,19 +440,20 @@ script = ExtResource( 2 )
 
 [node name="AniPlay" type="AnimationPlayer" parent="."]
 anims/attack = SubResource( 1 )
-anims/attackquick = SubResource( 9 )
-anims/freeze = SubResource( 2 )
-anims/ouch = SubResource( 3 )
-anims/shootdown = SubResource( 8 )
-anims/shootup = SubResource( 4 )
-anims/spin = SubResource( 5 )
+anims/attackquick = SubResource( 2 )
+anims/freeze = SubResource( 3 )
+anims/ouch = SubResource( 4 )
+anims/shootdown = SubResource( 5 )
+anims/shootup = SubResource( 6 )
+anims/spin = SubResource( 7 )
 
 [node name="Sprite" type="Sprite" parent="."]
-material = SubResource( 6 )
+material = SubResource( 8 )
 position = Vector2( 0, -30 )
 texture = ExtResource( 1 )
 hframes = 10
 vframes = 2
+frame = 7
 
 [node name="ColPoly" type="CollisionPolygon2D" parent="."]
 position = Vector2( 0, -32 )
@@ -463,7 +461,6 @@ polygon = PoolVector2Array( 0, 0, 6, 16, 0, 32, -6, 16 )
 
 [node name="Vision" type="RayCast2D" parent="."]
 position = Vector2( 0, -24 )
-enabled = true
 cast_to = Vector2( 0, 0 )
 collision_mask = 3
 
@@ -472,7 +469,7 @@ collision_mask = 3
 [node name="Col" type="CollisionShape2D" parent="Area"]
 position = Vector2( 0, -16 )
 rotation = 1.5708
-shape = SubResource( 7 )
+shape = SubResource( 9 )
 disabled = true
 
 [connection signal="body_entered" from="Area" to="." method="_on_Area_body_entered"]

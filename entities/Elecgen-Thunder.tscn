@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://entities/Elecgen-Thunder.gd" type="Script" id=1]
 [ext_resource path="res://sprites/thunder.png" type="Texture" id=2]
+[ext_resource path="res://shaders/Slashem.shader" type="Shader" id=3]
 
 [sub_resource type="Animation" id=1]
 resource_name = "_ready"
@@ -44,6 +45,11 @@ tracks/2/keys = {
 "values": [ true, false ]
 }
 
+[sub_resource type="ShaderMaterial" id=3]
+shader = ExtResource( 3 )
+shader_param/timer = 0.0
+shader_param/rate = 110.0
+
 [sub_resource type="CircleShape2D" id=2]
 radius = 16.0
 
@@ -56,6 +62,7 @@ playback_speed = 2.0
 anims/_ready = SubResource( 1 )
 
 [node name="Sprite" type="Sprite" parent="."]
+material = SubResource( 3 )
 texture = ExtResource( 2 )
 flip_h = true
 hframes = 4

@@ -152,6 +152,9 @@ func attack():
 		if abs(distanceXY.x) > 320 or abs(distanceXY.y) > 170 or ($Vision.is_colliding() && !$Vision.get_collider().is_in_group("player")) or !$Vision.is_colliding():
 			change_state(STATES.IDLE)
 	
+	#if on_tile > 1:
+	#	if $Sprite.frame == 3 or $Sprite.frame == 4 or $Sprite.frame == 5 or $Sprite.frame == 6 or $Sprite.frame == 7:# or $Sprite.frame == 1 or $Sprite.frame == 2:
+	#	charge()
 
 func _on_Area_body_entered(body):
 	if body.is_in_group("player"):
@@ -160,6 +163,8 @@ func _on_Area_body_entered(body):
 		
 		if $AniPlay.current_animation == "attack":
 			motion += Vector2(500*-facing,-100)
+		
+		$Area/Col.set_deferred("disabled", true)#do this to avoid knockbackin' back into the same hitbox
 
 
 func charge():
@@ -227,16 +232,19 @@ func audio_boommed():
 var wave_freezetime = 1
 
 func freeze():
-	if state < 3 && $Sprite.frame != 3 && $Sprite.frame != 4 && $Sprite.frame != 5 && $Sprite.frame != 6 && $Sprite.frame != 7 && $Sprite.frame != 1 && $Sprite.frame != 2:
-		change_state(STATES.OUCH)
-		$Area/Col.set_deferred("disabled", true)
-		
-		#if state != 4:
-		motion /= 3
-		$AniPlay.stop()
-		$AniPlay.playback_speed = wave_freezetime
-		Global.audio.BEEPs()
-		$AniPlay.play("freeze")
+	if state < 3:
+		if $Sprite.frame != 3 && $Sprite.frame != 4 && $Sprite.frame != 5 && $Sprite.frame != 6 && $Sprite.frame != 7 && $Sprite.frame != 1 && $Sprite.frame != 2:
+			change_state(STATES.OUCH)
+			$Area/Col.set_deferred("disabled", true)
+			
+			#if state != 4:
+			motion /= 3
+			$AniPlay.stop()
+			$AniPlay.playback_speed = wave_freezetime
+			Global.audio.BEEPs()
+			$AniPlay.play("freeze")
+		else:
+			$AniPlay.play("shootup")
 
 
 

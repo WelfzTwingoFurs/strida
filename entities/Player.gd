@@ -24,7 +24,7 @@ func _ready():
 	$Health.visible = true
 
 func _process(_delta):
-	if $Sprite.frame == 30 or state == 2:# or $Sprite.frame == 31:
+	if $Sprite.frame == 30 or state == 2 or $AniPlay.current_animation == "freeze":# or $Sprite.frame == 31:
 		$Sprite.modulate.a = 0 if Engine.get_frames_drawn() % 2 == 0 else 1
 	else:
 		$Sprite.modulate.a = 1.0
@@ -74,29 +74,33 @@ func _physics_process(_delta):
 	
 	#CHANGED x=8 TO x=6, y HAS BECOME INCORRECT, HOWEVER LESS 'STICKY' 'STIFFY' 'JANKY' SO KEEP IT
 	if on_tile < 1: #straight floor or air
-		#$ColPoly.polygon = [Vector2(-6,0), Vector2(6,0), Vector2(6,32), Vector2(-6,32)]
+		$ColPoly.polygon = [Vector2(-6,0), Vector2(6,0), Vector2(6,32), Vector2(-6,32)]
 		if is_on_floor(): #Only reset after landing
-			#$Sprite.position = Vector2(0,-19)
-			$Sprite.position = Vector2(0,-20)
+			$Sprite.position = Vector2(0,-19)
+			#$Sprite.position = Vector2(0,-20)
 	
 	elif on_tile == 1: #1x1
-		#$ColPoly.polygon = [Vector2(-6,0), Vector2(6,0), Vector2(6,16), Vector2(-6,32)]
+		$ColPoly.polygon = [Vector2(-6,0), Vector2(6,0), Vector2(6,16), Vector2(-6,32)]
 		if is_on_floor(): #Only reset after landing
-			#$Sprite.position = Vector2(-1*$ColPoly.scale.x,-19)
-			$Sprite.position = Vector2(6*$ColPoly.scale.x,-20)
+			$Sprite.position = Vector2(-1*$ColPoly.scale.x,-19)
+			#$Sprite.position = Vector2(6*$ColPoly.scale.x,-20)
 	
 	elif on_tile == 2: #2x1
-		#$ColPoly.polygon = [Vector2(-6,0), Vector2(6,0), Vector2(6,24), Vector2(-6,32)]
+		$ColPoly.polygon = [Vector2(-6,0), Vector2(6,0), Vector2(6,24), Vector2(-6,32)]
 		if is_on_floor(): #Only reset after landing
-			#$Sprite.position = Vector2(-1*$ColPoly.scale.x,-19)
-			$Sprite.position = Vector2(7*$ColPoly.scale.x,-20)
+			$Sprite.position = Vector2(-1*$ColPoly.scale.x,-19)
+			#$Sprite.position = Vector2(7*$ColPoly.scale.x,-20)
 	
 	elif on_tile == 3: #1x2
-		#$ColPoly.polygon = [Vector2(-6,0), Vector2(6,0), Vector2(-6,32), Vector2(-6,32)]
+		$ColPoly.polygon = [Vector2(-6,0), Vector2(6,0), Vector2(-6,32), Vector2(-6,32)]
 		if is_on_floor_or_wall(): #Only reset after landing
-			#$Sprite.position = Vector2(-3*$ColPoly.scale.x, -19)
-			$Sprite.position = Vector2(4*$ColPoly.scale.x, -20)
+			$Sprite.position = Vector2(-3*$ColPoly.scale.x, -19)
+			#$Sprite.position = Vector2(4*$ColPoly.scale.x, -20)
 	
+	elif on_tile == 4:
+		$ColPoly.polygon = [Vector2(-6,0), Vector2(6,0), Vector2(6,16), Vector2(0,32), Vector2(-6,16)]
+		if is_on_floor_or_wall():
+			$Sprite.position = Vector2(0, -10)
 	
 	if Global.TileZone.is_cell_x_flipped( Global.TileZone.world_to_map(position).x, Global.TileZone.world_to_map(position).y ):
 		$ColPoly.scale.x = -1
@@ -106,7 +110,8 @@ func _physics_process(_delta):
 	########################################################################
 	
 	if is_on_floor() && was_on_floor:
-		Global.audio.JUMPLANDs()
+		if on_tile != 4:
+			Global.audio.JUMPLANDs()
 		was_on_floor = false
 	
 	if !is_on_floor():
@@ -122,6 +127,11 @@ func _physics_process(_delta):
 var was_on_floor = false
 var jump_check = false
 
+
+
+func audio_step():
+	if is_on_floor_or_wall():
+		Global.audio.STEPs()
 
 ################################################################################
 
@@ -169,7 +179,7 @@ func idle():
 		$Step/Col.disabled = true
 		$Head/Col.disabled = true
 		
-		if Input.is_action_just_pressed("ply_jump") && (on_tile < 3):#can't jump on a slope too steep
+		if Input.is_action_just_pressed("ply_jump") && (on_tile != 3):#can't jump on a slope too steep
 			Global.audio.JUMPs()
 			motion.y -= JUMP
 			
@@ -224,7 +234,10 @@ func idle():
 				if $AniPlay.current_animation != "fakekickup" && $AniPlay.current_animation != "fakekickdown":
 					$AniPlay.stop()
 					if sign(motion.y) == 1:
-						$Sprite.frame = 6
+						if (on_tile == 4 && input.x != facing) or on_tile != 4:
+							$Sprite.frame = 6
+						else:
+							$AniPlay.play("walkstairs")
 					else:
 						$Sprite.frame = 5
 				#elif Input.is_action_pressed("ply_jump"):
@@ -306,7 +319,7 @@ func kick():
 		kick_anim()
 	
 	if is_on_floor():
-		if Input.is_action_just_pressed("ply_jump") && (on_tile < 3):#can't jump on a slope too steep
+		if Input.is_action_just_pressed("ply_jump") && (on_tile != 3):#can't jump on a slope too steep
 			motion.y -= JUMP
 		
 		if abs(motion.x) < TOP_SPEED:
@@ -404,6 +417,9 @@ func kick_shoot(pos):
 					kick_instance2.extra_position = Vector2(20*facing,0)
 			get_parent().add_child(kick_instance2)
 
+
+
+
 ################################################################################
 
 func _on_Area_body_entered(body):
@@ -471,36 +487,38 @@ func _on_Head_body_entered(body): #hit blocks like mario
 var HP = 150
 
 func ouch(damage,knockback,timer):
-	$Area/Col.set_deferred("disabled", true)
-	$Step/Col.set_deferred("disabled", true)
-	$Head/Col.set_deferred("disabled", true)
-	change_state(STATES.OUCH)
-	#motion = lerp(motion,Vector2(0,0),DEACCEL)
-	motion.x += knockback.x
-	motion.y += knockback.y
-	
-	$AniPlay.stop()
-	$AniPlay.playback_speed = timer
-	$AniPlay.play("ouch")
-	
-	HP -= damage
-	if HP < 1:
-		Global.audio.GETBIGs()
+	if $AniPlay.current_animation != "ouch":
+		$Area/Col.set_deferred("disabled", true)
+		$Step/Col.set_deferred("disabled", true)
+		$Head/Col.set_deferred("disabled", true)
+		change_state(STATES.OUCH)
+		#motion = lerp(motion,Vector2(0,0),DEACCEL)
+		motion.x += knockback.x
+		motion.y += knockback.y
+		
 		$AniPlay.stop()
-		change_state(STATES.NOCLIP)
+		$AniPlay.playback_speed = timer
+		$AniPlay.play("ouch")
+		
+		HP -= damage
+		if HP < 1:
+			Global.audio.GETBIGs()
+			$AniPlay.stop()
+			change_state(STATES.NOCLIP)
 
 ################################################################################
 
 func freeze(timer):
-	$Area/Col.set_deferred("disabled", true)
-	$Step/Col.set_deferred("disabled", true)
-	$Head/Col.set_deferred("disabled", true)
-	Global.audio.OUCHs()
-	change_state(STATES.OUCH)
-	motion /= 3
-	$AniPlay.stop()
-	$AniPlay.playback_speed = timer
-	$AniPlay.play("freeze")
+	if $AniPlay.current_animation != "freeze":
+		$Area/Col.set_deferred("disabled", true)
+		$Step/Col.set_deferred("disabled", true)
+		$Head/Col.set_deferred("disabled", true)
+		Global.audio.BEEPs()
+		change_state(STATES.OUCH)
+		motion /= 3
+		$AniPlay.stop()
+		$AniPlay.playback_speed = timer
+		$AniPlay.play("freeze")
 
 
 
