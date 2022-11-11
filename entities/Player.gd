@@ -243,23 +243,23 @@ func idle():
 					$AniPlay.stop()
 					if sign(motion.y) == 1:
 						if (on_tile == 4 && input.x != facing) or on_tile != 4:
-							if elevator == null: $Sprite.frame = 6
+							if elevator == null: $Sprite.frame = 6 
 							else:
 								if int(motion.x) == 0:
-									if input.y == 0: $Sprite.frame = 0
+									if input.y == 0 or facing != sign(elevator.position.x - position.x): $Sprite.frame = 0
 									else: $Sprite.frame = 38
 									
-								else: $AniPlay.play("walk")
+								else: $Sprite.frame = 4
 						else:
 							$AniPlay.play("walkstairs")
 					else:
 						if elevator == null: $Sprite.frame = 5
 						else:
 							if int(motion.x) == 0:
-								if input.y == 0: $Sprite.frame = 0
+								if input.y == 0 or facing != sign(elevator.position.x - position.x): $Sprite.frame = 0
 								else: $Sprite.frame = 39
 								
-							else: $AniPlay.play("walk")
+							else: $Sprite.frame = 4
 				#elif Input.is_action_pressed("ply_jump"):
 				#	$AniPlay.stop()
 				#	$Sprite.frame = 5 
@@ -372,15 +372,15 @@ func kick_anim():
 	#if is_on_floor():
 	if input.y == -1:
 		$Area/Col.position = Vector2(11*facing,-32)
-		if is_on_floor(): $AniPlay.play("kickhigh")
+		if is_on_floor() or elevator != null: $AniPlay.play("kickhigh")
 		else: $AniPlay.play("kickhighair")
 	elif input.y == 0:
 		$Area/Col.position = Vector2(16*facing,-16)
-		if is_on_floor(): $AniPlay.play("kickmid")
+		if is_on_floor() or elevator != null: $AniPlay.play("kickmid")
 		else: $AniPlay.play("kickmidair")
 	elif input.y == 1:
 		$Area/Col.position = Vector2(11*facing,0)
-		if is_on_floor(): $AniPlay.play("kicklow")
+		if is_on_floor() or elevator != null: $AniPlay.play("kicklow")
 		else: $AniPlay.play("kicklowair")
 #	else:
 #		if input.y == -1:

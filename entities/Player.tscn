@@ -729,7 +729,7 @@ position = Vector2( 0, -20 )
 texture = ExtResource( 1 )
 hframes = 10
 vframes = 4
-frame = 39
+frame = 4
 
 [node name="Speedo" type="Sprite" parent="."]
 visible = false

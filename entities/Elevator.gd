@@ -5,27 +5,34 @@ export var speed = 5
 var player
 var motion = Vector2(0,0)
 
-#func _ready():
-#	top_bot = Vector2(position.y-top_bot.x,position.y+top_bot.y)
+var readX = 0
+
+func _ready():
+	readX = position.x
 
 func _physics_process(_delta):
 	motion = move_and_slide(motion, Vector2(0,-1))
+	position.x = readX
 	
 	if player:
 		if Input.is_action_pressed("ply_up"):
 			#if position.y < top_bot.x:
 				motion.y = -speed
+				$Sprite.frame = 1
 			#else:
 			#	motion.y = 0
 		elif Input.is_action_pressed("ply_down"):
 			#if position.y > top_bot.y:
 				motion.y = speed
+				$Sprite.frame = 2
 			#else:
 			#	motion.y = 0
 		else:
-			motion.y = lerp(motion.y,0,0.2)
+			$Sprite.frame = 0
+			motion.y = 0
 	else:
-		motion.y = lerp(motion.y,0,0.2)
+		$Sprite.frame = 0
+		motion.y = 0
 
 
 func _on_Area_body_entered(body):
