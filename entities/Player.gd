@@ -45,7 +45,13 @@ func _physics_process(_delta):
 	
 	########################################################################
 	
-	motion.y += GRAVITY
+	if elevator == null:# or (elevator != null && input.y == 0):
+		motion.y += GRAVITY
+	else:
+		on_tile = 1
+		motion.y = elevator.motion.y
+		position.y = elevator.position.y
+	
 	$Sprite.scale.x = facing
 	
 	########################################################################
@@ -134,6 +140,8 @@ func audio_step():
 		Global.audio.STEPs()
 
 ################################################################################
+
+var elevator = null
 
 func idle():
 	if Input.is_action_just_pressed("bug_noclip"): change_state(STATES.NOCLIP)
@@ -235,11 +243,23 @@ func idle():
 					$AniPlay.stop()
 					if sign(motion.y) == 1:
 						if (on_tile == 4 && input.x != facing) or on_tile != 4:
-							$Sprite.frame = 6
+							if elevator == null: $Sprite.frame = 6
+							else:
+								if int(motion.x) == 0:
+									if input.y == 0: $Sprite.frame = 0
+									else: $Sprite.frame = 38
+									
+								else: $AniPlay.play("walk")
 						else:
 							$AniPlay.play("walkstairs")
 					else:
-						$Sprite.frame = 5
+						if elevator == null: $Sprite.frame = 5
+						else:
+							if int(motion.x) == 0:
+								if input.y == 0: $Sprite.frame = 0
+								else: $Sprite.frame = 39
+								
+							else: $AniPlay.play("walk")
 				#elif Input.is_action_pressed("ply_jump"):
 				#	$AniPlay.stop()
 				#	$Sprite.frame = 5 
@@ -591,10 +611,6 @@ func noclip():
 	if Input.is_action_just_pressed("bug_noclip"):
 		$ColPoly.disabled = false
 		change_state(STATES.IDLE)
-
-
-
-
 
 
 
