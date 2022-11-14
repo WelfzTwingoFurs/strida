@@ -246,8 +246,10 @@ func idle():
 							if elevator == null: $Sprite.frame = 6 
 							else:
 								if int(motion.x) == 0:
-									if input.y == 0 or facing != sign(elevator.position.x - position.x): $Sprite.frame = 0
-									else: $Sprite.frame = 38
+									if input.y == 0: $Sprite.frame = 0
+									else: 
+										if facing != sign(elevator.position.x - position.x): $Sprite.frame = 37
+										else: $Sprite.frame = 38
 									
 								else: $Sprite.frame = 4
 						else:
@@ -256,8 +258,11 @@ func idle():
 						if elevator == null: $Sprite.frame = 5
 						else:
 							if int(motion.x) == 0:
-								if input.y == 0 or facing != sign(elevator.position.x - position.x): $Sprite.frame = 0
-								else: $Sprite.frame = 39
+								if input.y == 0: $Sprite.frame = 0
+								else:
+									if facing != sign(elevator.position.x - position.x): $Sprite.frame = 36
+									else: $Sprite.frame = 39
+									
 								
 							else: $Sprite.frame = 4
 				#elif Input.is_action_pressed("ply_jump"):

@@ -7,7 +7,7 @@ var motion = Vector2(0,0)
 const TOP_SPEED = 100
 const ACCEL = 0.5
 const DEACCEL = 0.25
-const JUMP = 250
+const JUMP = 300
 const GRAVITY = 10
 
 
@@ -192,6 +192,8 @@ func _on_Area_body_entered(body):
 				$AniPlay.play("attackR")
 			else:
 				$AniPlay.play("attackL")
+		else:
+			body.motion.y -= 300
 		
 
 func lunge():
@@ -240,7 +242,7 @@ func freeze():
 		change_state(STATES.JUMP)
 
 func freeze_lunge():
-	$Area/Col.position = Vector2(0, -32)
+	$Area/Col.position = Vector2(0, -34)
 	Global.audio.UWs()
 
 

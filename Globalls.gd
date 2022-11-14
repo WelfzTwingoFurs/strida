@@ -6,7 +6,7 @@ var player
 var audio
 var camera = Camera2D
 
-var maxi = true
+var maxi = false
 var step = 0
 var zoom = 3
 
@@ -56,7 +56,7 @@ func _process(_delta):
 		maxi = !maxi
 		step = 0
 	
-	elif Input.is_action_just_pressed("bug_resreset"):
+	elif Input.is_action_pressed("bug_resreset"):
 		step = 0
 	
 	
