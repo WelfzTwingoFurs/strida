@@ -599,7 +599,7 @@ func _draw():#speedometer
 	draw_line(Vector2(-320, 170), Vector2(320, 170), Color(1,1,1), 1) #_
 	
 	draw_line(Vector2(-320, 170), Vector2(-320, -170), Color(1,1,1), 1) #|_
-	draw_line(Vector2(320, 170), Vector2(320, -170), Color(1,1,1), 1) #_|
+	draw_line(Vector2(321, 170), Vector2(321, -170), Color(1,1,1), 1) #_|
 
 
 ################################################################################

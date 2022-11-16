@@ -2,7 +2,7 @@
 
 [ext_resource path="res://entities/Elecgen-Thunder.gd" type="Script" id=1]
 [ext_resource path="res://sprites/thunder.png" type="Texture" id=2]
-[ext_resource path="res://shaders/Slashem.shader" type="Shader" id=3]
+[ext_resource path="res://shaders/explode.shader" type="Shader" id=3]
 
 [sub_resource type="Animation" id=1]
 resource_name = "_ready"

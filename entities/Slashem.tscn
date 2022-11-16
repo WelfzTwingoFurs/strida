@@ -1,6 +1,6 @@
 [gd_scene load_steps=11 format=2]
 
-[ext_resource path="res://shaders/Slashem.shader" type="Shader" id=1]
+[ext_resource path="res://shaders/explode.shader" type="Shader" id=1]
 [ext_resource path="res://sprites/Slashem.png" type="Texture" id=2]
 [ext_resource path="res://entities/Slashem.gd" type="Script" id=3]
 

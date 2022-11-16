@@ -260,6 +260,7 @@ func die():
 
 
 func die_start():
+	$ColPoly.set_deferred("disabled", true)
 	$AniPlay.stop()
 	$Sprite.texture = load("res://sprites/deadslashem.png")
 	#$Sprite.position.y = 0

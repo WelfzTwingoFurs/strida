@@ -2,7 +2,7 @@
 
 [ext_resource path="res://sprites/Elecgen.png" type="Texture" id=1]
 [ext_resource path="res://entities/Elecgen.gd" type="Script" id=2]
-[ext_resource path="res://shaders/Slashem.shader" type="Shader" id=3]
+[ext_resource path="res://shaders/explode.shader" type="Shader" id=3]
 
 [sub_resource type="Animation" id=1]
 resource_name = "attack"

@@ -25,13 +25,3 @@ func _process(_delta):
 		
 		elif Input.is_action_pressed("ply_down"):
 			timer.y -= 0.01
-	
-	if timer.x < 0:
-		timer.x = 1
-	elif timer.x > 1:
-		timer.x = 0
-	
-	if timer.y < 0:
-		timer.y = 1
-	elif timer.y > 1:
-		timer.y = 0

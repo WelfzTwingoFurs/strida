@@ -748,6 +748,7 @@ position = Vector2( 0, -32 )
 polygon = PoolVector2Array( -6, 0, 6, 0, 6, 16, 0, 32, -6, 16 )
 
 [node name="Camera2D" type="Camera2D" parent="."]
+z_index = 4096
 current = true
 
 [node name="Console" type="Label" parent="Camera2D"]
