@@ -4,10 +4,8 @@ export var id = 0
 var motion = Vector2(0,0)
 const GRAVITY = 10
 
-func _ready():
-	$Sprite.frame = id
-
 func _physics_process(_delta):
+	$Sprite.frame = id
 	motion = move_and_slide(motion, Vector2(0,-1))
 	
 	if !is_on_floor():

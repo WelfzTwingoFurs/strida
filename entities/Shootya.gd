@@ -257,7 +257,7 @@ func audio_boommed():
 
 var wave_freezetime = 1
 
-func freeze():
+func freeze(_projectile):
 	if state < 3:
 		change_state(STATES.OUCH)
 		

@@ -234,12 +234,23 @@ func audio_boommed():
 
 var wave_freezetime = 1
 
-func freeze():
-	if state < 2:
-		motion.y -= JUMP
-		$AniPlay.stop()
-		$AniPlay.play("upper")
-		change_state(STATES.JUMP)
+func freeze(projectile):
+	if projectile:
+		if state < 3:
+			change_state(STATES.OUCH)
+			$Area/Col.set_deferred("disabled", true)
+			
+			$AniPlay.playback_speed = wave_freezetime
+			$AniPlay.play("freeze")
+			Global.audio.BEEPs()
+			motion /= 3
+		
+	else:
+		if state < 2:
+			motion.y -= JUMP
+			$AniPlay.stop()
+			$AniPlay.play("upper")
+			change_state(STATES.JUMP)
 
 func freeze_lunge():
 	$Area/Col.position = Vector2(0, -34)
@@ -267,7 +278,7 @@ func die():
 func die_start():
 	$ColPoly.set_deferred("disabled", true)
 	$AniPlay.stop()
-	$Sprite.texture = load("res://sprites/deadslashem.png")
+	$Sprite.texture = load("res://sprites/deadfluffy.png")
 	#$Sprite.position.y = 0
 	$Sprite.hframes = 1
 	$Sprite.vframes = 1

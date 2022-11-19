@@ -27,6 +27,14 @@ var distanceA = INF
 var on_tile
 
 func _physics_process(_delta):
+	motion = move_and_slide(motion, Vector2(0,-1))
+	motion.y += GRAVITY
+	
+
+
+
+
+func _process(_delta):
 	match state:
 		STATES.IDLE:
 			idle()
@@ -40,9 +48,6 @@ func _physics_process(_delta):
 			pass
 		STATES.DIE:
 			die()
-	
-	motion = move_and_slide(motion, Vector2(0,-1))
-	motion.y += GRAVITY
 	
 	###########################################################################
 	
@@ -76,9 +81,6 @@ func _physics_process(_delta):
 	################################################################################
 	
 	
-
-
-func _process(_delta):
 	if $Sprite.frame == 9 or HP < 1 or $AniPlay.current_animation == "freeze":
 		$Sprite.modulate.a = 0 if Engine.get_frames_drawn() % 2 == 0 else 1
 	else:
@@ -226,7 +228,7 @@ func audio_boommed():
 
 var wave_freezetime = 1
 
-func freeze():
+func freeze(_projectile):
 	if state < 3:
 		change_state(STATES.OUCH)
 		$Area/Col.set_deferred("disabled", true)

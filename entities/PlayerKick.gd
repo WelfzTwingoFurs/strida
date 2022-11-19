@@ -36,8 +36,8 @@ func _process(_delta):
 
 
 func _on_Area_body_entered(body):
-	if body.is_in_group("freezeful") && body.state < 3:
-		body.freeze()
+	if body.is_in_group("hurtful") && body.state < 3:
+		body.freeze(true)
 		body.wave_freezetime = freezetime
 		if !pierce:
 			queue_free()

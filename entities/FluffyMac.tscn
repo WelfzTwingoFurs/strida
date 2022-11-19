@@ -349,7 +349,6 @@ shader_param/rate = 110.0
 [sub_resource type="CircleShape2D" id=9]
 
 [node name="FluffyMac" type="KinematicBody2D" groups=[
-"freezeful",
 "hurtful",
 ]]
 position = Vector2( -112, 792 )

@@ -152,6 +152,7 @@ func idle():
 	
 	if input.x != 0:
 		motion.x += input.x#running
+		if $Sprite.frame == 6: ani_walk()
 		
 		if abs(motion.x) < (TOP_SPEED/1.5): #under half speed, slower accel
 			motion.x = lerp(motion.x,TOP_SPEED*input.x,ACCEL/3)
@@ -477,7 +478,7 @@ func _on_Step_body_entered(body): #step
 		if body.is_in_group("freezeful") && body.state != 3 && body.position.y > position.y && sign(motion.y) == 1: #step on enemies like Rygar
 			motion.y = -JUMP#-abs(motion.y)/2
 			body.wave_freezetime = pow_freezetime
-			body.freeze()
+			body.freeze(false)
 			if state == 0:
 				$AniPlay.play("fakekickdown")
 		
@@ -523,9 +524,13 @@ func ouch(damage,knockback,timer):
 		
 		$AniPlay.stop()
 		$AniPlay.playback_speed = timer
-		$AniPlay.play("ouch")
 		
-		HP -= damage
+		if damage > 0:
+			$AniPlay.play("ouch")
+			HP -= damage
+		else:
+			$AniPlay.play("ouchnot")
+		
 		if HP < 1:
 			Global.audio.GETBIGs()
 			$AniPlay.stop()

@@ -37,11 +37,11 @@ func _process(_delta):
 					mode = 0
 			
 			if mode == 0:
-				text = str("['] for help... ",Engine.get_frames_per_second())
+				text = str("Press ['] for help... ",Engine.get_frames_per_second())
 			elif mode == 1:
-				text = str("CONTROLS:\n move-[WASD],\n jump-[UP],\n kick-[RIGHT].\nnoclip&heal [C],\n console toggle[F1],\n NEXT PAGE ['].")
+				text = str("CONTROLS:\n move-[WASD],\n jump-[UP],\n kick-[RIGHT];\nBUG\nnoclip & heal[C],\n text toggle[ESC],\n next page['];\nMOVES\n move+kick,\n head-butt,\n freeze-stomp.")
 			elif mode == 2:
-				text = str("RESOLUTION:\n readjust [BCKSPC],\n zoom plus [+],\n zoom minus [-];\nSPEED:\n -[F9], +[F10], 1[F11], 0[F12].\nSCENE:\n reset [F5].")
+				text = str("RESOLUTION:\n readjust [BCKSPC],\n zoom plus[+],\n zoom minus[-],\n screen/2[F1],\n screen*2[F2];\nSPEED:\n -[F9], +[F10], 1[F11], 0[F12].\nSCENE:\n reset [F5].")
 			elif mode == 3:
 				text = str(
 					"PLAYER\n","state:",Global.player.state," input:",Global.player.input," facing:",Global.player.facing," on_tile:",Global.player.on_tile," HP:",Global.player.HP,
