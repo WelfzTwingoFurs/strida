@@ -78,35 +78,26 @@ func _physics_process(_delta):
 	
 	on_tile = Global.TileZone.get_cellv( Global.TileZone.world_to_map(position) )
 	
+
+	
 	#CHANGED x=8 TO x=6, y HAS BECOME INCORRECT, HOWEVER LESS 'STICKY' 'STIFFY' 'JANKY' SO KEEP IT
 	if on_tile < 1: #straight floor or air
-		$ColPoly.polygon = [Vector2(-6,0), Vector2(6,0), Vector2(6,32), Vector2(-6,32)]
+		$ColPoly.polygon =[Vector2(0,0), Vector2(6,16), Vector2(6,32), Vector2(-6,32), Vector2(-6,16)]
 		if is_on_floor(): #Only reset after landing
-			$Sprite.position = Vector2(0,-19)
-			#$Sprite.position = Vector2(0,-20)
+			$Sprite.position = Vector2(0,-20)
 	
-	elif on_tile == 1: #1x1
-		$ColPoly.polygon = [Vector2(-6,0), Vector2(6,0), Vector2(6,16), Vector2(-6,32)]
-		if is_on_floor(): #Only reset after landing
-			$Sprite.position = Vector2(-1*$ColPoly.scale.x,-19)
-			#$Sprite.position = Vector2(6*$ColPoly.scale.x,-20)
+	else:#if on_tile > 1:
+		$ColPoly.polygon = [Vector2(0,0), Vector2(6,16), Vector2(0,32), Vector2(-6,16)]
+		if on_tile == 1: #1x1
+			$Sprite.position = Vector2(6*$ColPoly.scale.x,-20)
 	
-	elif on_tile == 2: #2x1
-		$ColPoly.polygon = [Vector2(-6,0), Vector2(6,0), Vector2(6,24), Vector2(-6,32)]
-		if is_on_floor(): #Only reset after landing
-			$Sprite.position = Vector2(-1*$ColPoly.scale.x,-19)
-			#$Sprite.position = Vector2(7*$ColPoly.scale.x,-20)
+		elif on_tile == 2: #2x1
+			$Sprite.position = Vector2(7*$ColPoly.scale.x,-20)
 	
-	elif on_tile == 3: #1x2
-		$ColPoly.polygon = [Vector2(-6,0), Vector2(6,0), Vector2(-6,32), Vector2(-6,32)]
-		if is_on_floor_or_wall(): #Only reset after landing
-			$Sprite.position = Vector2(-3*$ColPoly.scale.x, -19)
-			#$Sprite.position = Vector2(4*$ColPoly.scale.x, -20)
+		elif on_tile == 3: #1x2
+			$Sprite.position = Vector2(4*$ColPoly.scale.x, -20)
 	
-	elif on_tile == 4:
-		$ColPoly.polygon = [Vector2(-6,0), Vector2(6,0), Vector2(6,16), Vector2(0,32), Vector2(-6,16)]
-		if is_on_floor_or_wall():
-			$Sprite.position = Vector2(0, -10)
+	
 	
 	if Global.TileZone.is_cell_x_flipped( Global.TileZone.world_to_map(position).x, Global.TileZone.world_to_map(position).y ):
 		$ColPoly.scale.x = -1
@@ -243,18 +234,18 @@ func idle():
 				if $AniPlay.current_animation != "fakekickup" && $AniPlay.current_animation != "fakekickdown":
 					$AniPlay.stop()
 					if sign(motion.y) == 1:
-						if (on_tile == 4 && input.x != facing) or on_tile != 4:
-							if elevator == null: $Sprite.frame = 6 
-							else:
-								if int(motion.x) == 0:
-									if input.y == 0: $Sprite.frame = 0
-									else: 
-										if facing != sign(elevator.position.x - position.x): $Sprite.frame = 37
-										else: $Sprite.frame = 38
-									
-								else: $Sprite.frame = 4
+						#if (on_tile == 4 && input.x != facing) or on_tile != 4:
+						if elevator == null && ($Sprite.frame < 20 or $Sprite.frame > 25): $Sprite.frame = 6 
 						else:
-							$AniPlay.play("walkstairs")
+							if int(motion.x) == 0:
+								if input.y == 0: $Sprite.frame = 0
+								else: 
+									if facing != sign(elevator.position.x - position.x): $Sprite.frame = 37
+									else: $Sprite.frame = 38
+								
+							else: $Sprite.frame = 4
+						#else:
+						#	$AniPlay.play("walkstairs")
 					else:
 						if elevator == null: $Sprite.frame = 5
 						else:
