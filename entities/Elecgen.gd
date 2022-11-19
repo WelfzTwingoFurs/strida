@@ -231,7 +231,7 @@ func audio_boommed():
 
 var wave_freezetime = 1
 
-func freeze():
+func freeze(_projectile):
 	if state < 3:
 		if $Sprite.frame != 3 && $Sprite.frame != 4 && $Sprite.frame != 5 && $Sprite.frame != 6 && $Sprite.frame != 7 && $Sprite.frame != 1 && $Sprite.frame != 2:
 			change_state(STATES.OUCH)

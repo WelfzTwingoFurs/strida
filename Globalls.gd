@@ -7,7 +7,7 @@ var audio
 var camera = Camera2D
 
 var step = 0
-var zoom = 3
+var zoom = 2
 
 var was_pos
 
@@ -40,6 +40,35 @@ func _process(_delta):
 			zoom = 1
 		step = 0
 	
+
+
+
+	if Input.is_action_just_pressed("res_half"):
+		OS.center_window()
+		OS.window_size /= 2
+		OS.center_window()
+		#zoom -= 1
+		#if zoom == 0:
+		#	zoom = 1
+		step = 0
+	
+	elif Input.is_action_just_pressed("res_double"):
+		OS.center_window()
+		OS.window_size *= 2
+		OS.center_window()
+		#zoom += 1
+		step = 0
+
+
+
+
+
+
+
+
+
+
+
 
 	
 	elif Input.is_action_pressed("bug_resreset"):
