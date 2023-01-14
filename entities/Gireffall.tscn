@@ -1,30 +1,90 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://sprites/giraffall.png" type="Texture" id=1]
 [ext_resource path="res://sprites/giraffallneck.png" type="Texture" id=2]
 [ext_resource path="res://entities/Gireffall.gd" type="Script" id=3]
 
+[sub_resource type="Animation" id=2]
+resource_name = "fall"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.2, 0.4 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 1,
+"values": [ 0, 1, 2 ]
+}
+
+[sub_resource type="Animation" id=3]
+resource_name = "getup"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.2 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 1, 0 ]
+}
+
+[sub_resource type="Animation" id=1]
+resource_name = "walk"
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0.2, 0.7 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 3, 4 ]
+}
+
 [node name="Gireffall" type="KinematicBody2D"]
 script = ExtResource( 3 )
+
+[node name="AniPlay" type="AnimationPlayer" parent="."]
+anims/fall = SubResource( 2 )
+anims/getup = SubResource( 3 )
+anims/walk = SubResource( 1 )
+
+[node name="moving" type="Node2D" parent="."]
+
+[node name="Polygon2D" type="Polygon2D" parent="moving"]
+position = Vector2( -20, -33 )
+texture = ExtResource( 2 )
+polygon = PoolVector2Array( 0, 0, 40, 0, 40, 40, 0, 40 )
+
+[node name="Head" type="Sprite" parent="moving"]
+position = Vector2( 0, -48 )
+texture = ExtResource( 1 )
+hframes = 10
+vframes = 2
+frame = 10
 
 [node name="Sprite" type="Sprite" parent="."]
 position = Vector2( 0, -20 )
 texture = ExtResource( 1 )
 hframes = 10
 vframes = 2
-frame = 2
 
-[node name="Polygon2D" type="Polygon2D" parent="."]
-position = Vector2( -20, -65 )
-texture = ExtResource( 2 )
-polygon = PoolVector2Array( 0, 0, 40, 0, 40, 40, 0, 40 )
-
-[node name="Head" type="Sprite" parent="."]
-position = Vector2( 0, -20 )
-texture = ExtResource( 1 )
-hframes = 10
-vframes = 2
-frame = 10
+[node name="Vision" type="RayCast2D" parent="."]
+position = Vector2( 0, -24 )
+enabled = true
+cast_to = Vector2( 0, 0 )
+collision_mask = 3
 
 [node name="ColPoly" type="CollisionPolygon2D" parent="."]
 position = Vector2( 0, -32 )
