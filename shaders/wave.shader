@@ -6,8 +6,8 @@ uniform vec2 center;
 uniform float timer;
 
 void fragment() {
-	COLOR = texture(TEXTURE,UV);
+	//COLOR = texture(TEXTURE,UV);
 	vec2 disp = normalize(UV - center) * timer;
 	
-	COLOR = texture(TEXTURE,UV-disp);
+	COLOR = texture(SCREEN_TEXTURE,UV-disp);
 	}
