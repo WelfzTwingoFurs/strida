@@ -3,8 +3,7 @@
 [ext_resource path="res://sprites/player-kick.png" type="Texture" id=1]
 [ext_resource path="res://entities/PlayerKick.gd" type="Script" id=2]
 
-[sub_resource type="Animation" id=1]
-resource_name = "high"
+[sub_resource type="Animation" id=2]
 length = 0.3
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -45,8 +44,7 @@ tracks/2/keys = {
 } ]
 }
 
-[sub_resource type="Animation" id=2]
-resource_name = "low"
+[sub_resource type="Animation" id=3]
 length = 0.3
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -87,7 +85,7 @@ tracks/2/keys = {
 } ]
 }
 
-[sub_resource type="Animation" id=3]
+[sub_resource type="Animation" id=4]
 length = 0.3
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -128,27 +126,27 @@ tracks/2/keys = {
 } ]
 }
 
-[sub_resource type="CircleShape2D" id=4]
+[sub_resource type="CircleShape2D" id=1]
 
 [node name="PlayerKick" type="KinematicBody2D"]
 z_index = -4095
+collision_layer = 0
 script = ExtResource( 2 )
 
 [node name="AniPlay" type="AnimationPlayer" parent="."]
-anims/high = SubResource( 1 )
-anims/low = SubResource( 2 )
-anims/mid = SubResource( 3 )
+anims/high = SubResource( 2 )
+anims/low = SubResource( 3 )
+anims/mid = SubResource( 4 )
 
 [node name="Sprite" type="Sprite" parent="."]
 texture = ExtResource( 1 )
-flip_v = true
 hframes = 10
 vframes = 2
-frame = 9
+frame = 1
 
 [node name="Area" type="Area2D" parent="."]
 
 [node name="Col" type="CollisionShape2D" parent="Area"]
-shape = SubResource( 4 )
+shape = SubResource( 1 )
 
 [connection signal="body_entered" from="Area" to="." method="_on_Area_body_entered"]

@@ -72,14 +72,15 @@ func _process(_delta):
 
 func idle():
 	if chasing > 1:
-		y = (lerp(y,distanceXY.x,0.02))
-		print(y,"    ",-abs(distanceXY.x))
+		y = (lerp(y,-abs(distanceXY.x),0.02))
+		#print(y,"    ",-abs(distanceXY.x))
 		if y > -abs(distanceXY.x) && abs(distanceXY.x) > 50:
-			motion.x = lerp(motion.x,-155+y*sign(distanceXY.x),0.01)
+			motion.x = lerp(motion.x,(155+y)*sign(distanceXY.x),0.01)
 			$AniPlay.play("walk")
 		elif y < -abs(distanceXY.x)/2:
 			change_state(STATES.ATTACK)
 	else:
+		y = (lerp(y,0,0.02))
 		motion.x = 0
 		$AniPlay.stop()
 		$Sprite.frame = 0

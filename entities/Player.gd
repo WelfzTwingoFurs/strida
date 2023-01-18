@@ -8,6 +8,7 @@ var input = Vector2(0,0)
 var facing = 1
 
 var on_tile = 0
+var was_tile = -1
 
 const TOP_SPEED = 175
 const ACCEL = 0.5
@@ -97,6 +98,9 @@ func _physics_process(_delta):
 		elif on_tile == 3: #1x2
 			$Sprite.position = Vector2(4*$ColPoly.scale.x, -20)
 	
+	if was_tile != on_tile:
+		ani_walkslope()
+		was_tile = on_tile
 	
 	
 	if Global.TileZone.is_cell_x_flipped( Global.TileZone.world_to_map(position).x, Global.TileZone.world_to_map(position).y ):

@@ -155,7 +155,14 @@ func push():
 var HP = 50
 
 func ouch(damage,knockback, time):
-	if !on_me:
+	if on_me:
+		change_state(STATES.OUCH)
+		$AniPlay.stop()
+		$AniPlay.play("hittop")
+		$AniPlay.playback_speed = 1
+		
+	else:
+		
 		change_state(STATES.OUCH)
 		motion.x += knockback.x/5
 		motion.y = 100

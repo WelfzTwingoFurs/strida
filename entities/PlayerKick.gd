@@ -33,6 +33,9 @@ func _physics_process(_delta):
 
 func _process(_delta):
 	$Sprite.modulate.a = 0 if Engine.get_frames_drawn() % 2 == 0 else 1
+	
+	#if !pierce && (is_on_floor() or is_on_ceiling() or is_on_wall()):
+	#	queue_free()
 
 
 func _on_Area_body_entered(body):
@@ -43,3 +46,4 @@ func _on_Area_body_entered(body):
 			queue_free()
 		else:
 			pass
+	

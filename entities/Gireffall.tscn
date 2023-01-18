@@ -4,9 +4,9 @@
 [ext_resource path="res://sprites/giraffallneck.png" type="Texture" id=2]
 [ext_resource path="res://entities/Gireffall.gd" type="Script" id=3]
 
-[sub_resource type="Animation" id=2]
+[sub_resource type="Animation" id=1]
 resource_name = "fall"
-length = 0.5
+length = 0.8
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
 tracks/0/interp = 1
@@ -14,13 +14,13 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.2, 0.4 ),
+"times": PoolRealArray( 0, 0.3, 0.6 ),
 "transitions": PoolRealArray( 1, 1, 1 ),
 "update": 1,
 "values": [ 0, 1, 2 ]
 }
 
-[sub_resource type="Animation" id=3]
+[sub_resource type="Animation" id=2]
 resource_name = "getup"
 length = 0.3
 tracks/0/type = "value"
@@ -36,8 +36,7 @@ tracks/0/keys = {
 "values": [ 1, 0 ]
 }
 
-[sub_resource type="Animation" id=1]
-resource_name = "walk"
+[sub_resource type="Animation" id=3]
 loop = true
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -56,9 +55,9 @@ tracks/0/keys = {
 script = ExtResource( 3 )
 
 [node name="AniPlay" type="AnimationPlayer" parent="."]
-anims/fall = SubResource( 2 )
-anims/getup = SubResource( 3 )
-anims/walk = SubResource( 1 )
+anims/fall = SubResource( 1 )
+anims/getup = SubResource( 2 )
+anims/walk = SubResource( 3 )
 
 [node name="moving" type="Node2D" parent="."]
 
