@@ -281,22 +281,24 @@ func idle():
 
 
 func ani_walk():#Use this function as we have varying animations
-	if on_tile < 1:
-		$AniPlay.play("walk")
-	elif on_tile == 1:
-		$AniPlay.play("walk1")
-	elif on_tile == 2:
-		$AniPlay.play("walk2")
-	elif on_tile == 3:
-		$AniPlay.play("walk3")
+	if !$AniPlay.current_animation == "freeze":
+		if on_tile < 1:
+			$AniPlay.play("walk")
+		elif on_tile == 1:
+			$AniPlay.play("walk1")
+		elif on_tile == 2:
+			$AniPlay.play("walk2")
+		elif on_tile == 3:
+			$AniPlay.play("walk3")
 
 func ani_walkslope():#Use this function as we have varying animations
-	if on_tile == 1:
-		$AniPlay.play("walkslope1")
-	elif on_tile == 2:
-		$AniPlay.play("walkslope2")
-	elif on_tile == 3:
-		$AniPlay.play("walkslope3")
+	if !$AniPlay.current_animation == "freeze":
+		if on_tile == 1:
+			$AniPlay.play("walkslope1")
+		elif on_tile == 2:
+			$AniPlay.play("walkslope2")
+		elif on_tile == 3:
+			$AniPlay.play("walkslope3")
 
 ################################################################################
 
@@ -606,6 +608,7 @@ func _draw():#speedometer
 
 
 func noclip():
+	$AniPlay.stop()
 	HP = 150
 	$Step/Col.disabled = true
 	$ColPoly.disabled = true
