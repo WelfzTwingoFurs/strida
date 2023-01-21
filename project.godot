@@ -16,7 +16,7 @@ run/main_scene="res://Node2D.tscn"
 boot_splash/image="res://icon.png"
 boot_splash/fullsize=false
 boot_splash/use_filter=false
-boot_splash/bg_color=Color( 0.658824, 0, 0.658824, 1 )
+boot_splash/bg_color=Color( 0.662745, 0, 0.662745, 1 )
 config/icon="res://icon.png"
 
 [autoload]
