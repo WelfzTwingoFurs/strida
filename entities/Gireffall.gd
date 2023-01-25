@@ -7,7 +7,8 @@ var motion = Vector2(0,0)
 const GRAVITY = 100
 
 var y = 0
-var distanceXY = Vector2(0,0)
+var dist_player = Vector2(INF,INF)
+var dist_camera = Vector2(INF,INF)
 
 var chasing = 0
 
@@ -18,8 +19,8 @@ func _physics_process(_delta):
 	motion = move_and_slide(motion, Vector2(0,-1))
 	motion.y += GRAVITY
 	
-	if abs(distanceXY.x) < 320 && abs(distanceXY.y) < 170:
-		$Vision.cast_to = distanceXY
+	if abs(dist_camera.x) < 320 && abs(dist_camera.y) < 170:
+		$Vision.cast_to = dist_player
 	
 	if $Vision.is_colliding() && $Vision.get_collider().is_in_group("player"):
 		chasing = 100 #we got a hit, reset timer
@@ -33,10 +34,11 @@ func _process(_delta):
 			idle()
 		STATES.ATTACK:
 			attack()
-	distanceXY = Global.player.position - position
+	dist_player = Global.player.position - position
+	dist_camera = Global.player.camerapos - position
 	
 	if chasing > 1:
-		if sign(distanceXY.x) == 1:
+		if sign(dist_player.x) == 1:
 			$Sprite.scale.x = 1
 			$Area.scale.x = 1
 			$moving.scale.x = 1
@@ -67,7 +69,7 @@ func _process(_delta):
 		$moving/Polygon2D.position = Vector2(29,-65)
 		$Area/Col.shape.points = [Vector2(8,16), Vector2($moving/Head.position.x,$moving/Head.position.y+45), Vector2(0,y)]
 	else:
-		#$Checker.cast_to = Vector2(abs(distanceXY.x),0)
+		#$Checker.cast_to = Vector2(abs(dist_player.x),0)
 		$Checker.position.y = -27
 		$moving/Head.position = Vector2(0,int(y) -40)
 		$moving/Polygon2D.rotation_degrees = 0
@@ -79,7 +81,7 @@ func _process(_delta):
 			$Checker.cast_to = Vector2(abs(y)+10, 0)
 		#	y = abs($Checker.get_collision_point().x - position.x)/2 -40
 		else:
-			$Checker.cast_to = Vector2(abs(distanceXY.x),0)
+			$Checker.cast_to = Vector2(abs(dist_player.x),0)
 	
 	$moving/Polygon2D.polygon = [Vector2(0,y+40), Vector2(40,y+40), Vector2(40,40), Vector2(0,40)]
 	$HeadPoly.position = Vector2($moving/Head.position.x*$Sprite.scale.x,$moving/Head.position.y)
@@ -97,18 +99,18 @@ func _process(_delta):
 func idle():
 	if chasing > 1:
 		if !$Checker.is_colliding():
-			y = (lerp(y,-abs(distanceXY.x),0.02))
+			y = (lerp(y,-abs(dist_player.x),0.02))
 		else:
 			y += 1
 		
-		#print(y,"    ",-abs(distanceXY.x))
-		if y > -abs(distanceXY.x) && abs(distanceXY.x) > y:
-			motion.x = lerp(motion.x,(155+y)*sign(distanceXY.x),0.01)
+		#print(y,"    ",-abs(dist_player.x))
+		if y > -abs(dist_player.x) && abs(dist_player.x) > y:
+			motion.x = lerp(motion.x,(155+y)*sign(dist_player.x),0.01)
 			$AniPlay.play("walk")
-		else:
-			if $Vision.is_colliding() && $Vision.get_collider().is_in_group("player"):
-				if y < -abs(distanceXY.x)/2:
-					change_state(STATES.ATTACK)
+		elif y < -abs(dist_player.x)/2:
+			#if $Vision.is_colliding() && $Vision.get_collider().is_in_group("player"):
+			#if y < -abs(dist_player.x)/2:
+			change_state(STATES.ATTACK)
 	else:
 		y = (lerp(y,0,0.02))
 		motion.x = 0

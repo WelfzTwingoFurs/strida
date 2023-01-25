@@ -15,7 +15,8 @@ func _ready():
 	$Sprite.rotation_degrees = facing.y * 90
 	$Sprite.material = $Sprite.material.duplicate()
 
-var distanceXY = Vector2(0,0)
+var dist_player = Vector2(INF,INF)
+var dist_camera = Vector2(INF,INF)
 
 func _physics_process(_delta):
 	motion = move_and_slide(motion, Vector2(0,-1))
@@ -33,10 +34,11 @@ func _physics_process(_delta):
 		queue_free()
 	
 	
-	distanceXY = Global.player.position - position
+	dist_player = Global.player.position - position
+	dist_camera = Global.player.camerapos - position
 	
 	if OS.get_window_size()/Global.zoom > Vector2(640, 340):
-		if abs(distanceXY.x) < 320 && abs(distanceXY.y) < 170:
+		if abs(dist_camera.x) < 320 && abs(dist_camera.y) < 170:
 			$Sprite.modulate = Color(1,1,1,1)
 		else:
 			$Sprite.modulate = Color(0,0,0,1)

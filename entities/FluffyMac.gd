@@ -21,7 +21,8 @@ func _ready():
 
 var facing = 1
 var player
-var distanceXY = Vector2(INF,INF)
+var dist_player = Vector2(INF,INF)
+var dist_camera = Vector2(INF,INF)
 var distanceA = INF
 
 var on_tile
@@ -48,7 +49,8 @@ func _physics_process(_delta):
 	
 	if facing != 0:
 		$Sprite.scale.x = facing
-	distanceXY = player.position - position
+	dist_player = player.position - position
+	dist_camera = player.camerapos - position
 	distanceA = player.position.distance_to(position)
 	
 	###########################################################################
@@ -111,36 +113,36 @@ func idle():
 		
 		
 		
-		#if (abs(distanceXY.x) < abs(get_viewport().size.x/2)) && (abs(distanceXY.y) < abs(get_viewport().size.y/2)): #player in screen range
-		if abs(distanceXY.x) < 320 && abs(distanceXY.y) < 170: #player in screen range
+		#if (abs(dist_player.x) < abs(get_viewport().size.x/2)) && (abs(dist_player.y) < abs(get_viewport().size.y/2)): #player in screen range
+		if abs(dist_camera.x) < 320 && abs(dist_camera.y) < 170: #player in screen range
 			$Sprite.modulate = Color(1,1,1,1)
 			
 			if chasing < 1: #timer 0, idle but look out
 				motion.x = lerp(motion.x,0,DEACCEL/10)
-				$Vision.cast_to = distanceXY #cast to player!
+				$Vision.cast_to = dist_player #cast to player!
 				if $Vision.is_colliding() && $Vision.get_collider().is_in_group("player"):
 					chasing = 100 #we got a hit, reset timer
 				
 			
 			else:#if chasing > 0:
 				if !$Vision.is_colliding() or ($Vision.is_colliding() && !$Vision.get_collider().is_in_group("player")): #player outta sight
-					$Vision.cast_to = distanceXY #cast to player!
+					$Vision.cast_to = dist_player #cast to player!
 					chasing -= 1 #interest timer is ticking down
 				else:
 					chasing = 100 #saw 'em again, reset timer
 				
 				
-				if abs(distanceXY.x) < 25: #close, attack
-					if abs(distanceXY.y) < 25:
+				if abs(dist_player.x) < 25: #close, attack
+					if abs(dist_player.y) < 25:
 						$AniPlay.play("attack")
 						change_state(STATES.ATTACK)
-					elif sign(distanceXY.y) == -1:
+					elif sign(dist_player.y) == -1:
 						motion.y -= JUMP
 						$AniPlay.play("upper")
 						change_state(STATES.JUMP)
 				
-				facing = sign(distanceXY.x)
-				if abs(distanceXY.x) > 25:
+				facing = sign(dist_player.x)
+				if abs(dist_player.x) > 25:
 					motion.x += facing
 					motion.x = lerp(motion.x,abs(TOP_SPEED/on_tile)*facing,ACCEL/10)
 				else: #too close, stop
@@ -210,7 +212,7 @@ func ouch(damage,knockback, time):
 	change_state(STATES.OUCH)
 	$Area/Col.set_deferred("disabled", true)
 	
-	if abs(distanceXY.x) < 10:
+	if abs(dist_player.x) < 10:
 		motion.x = knockback.x/2
 	else:
 		motion.x = knockback.x/5

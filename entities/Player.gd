@@ -30,7 +30,11 @@ func _process(_delta):
 	else:
 		$Sprite.modulate.a = 1.0
 
+var camerapos
+
 func _physics_process(_delta):
+	camerapos = $Camera2D.get_camera_screen_center()
+	
 	match state:
 		STATES.IDLE:
 			idle()
@@ -57,22 +61,36 @@ func _physics_process(_delta):
 	
 	########################################################################
 	
-	
-	
 	if Input.is_action_pressed("ply_up"):
 		input.y = -1
+		if Input.is_action_pressed("ctrl"):
+			$Camera2D.position.y = lerp($Camera2D.position.y, -150, 0.1)
 	elif Input.is_action_pressed("ply_down"):
 		input.y = 1
+		if Input.is_action_pressed("ctrl"):
+			$Camera2D.position.y = lerp($Camera2D.position.y, 125, 0.1)
 	else:
 		input.y = 0
+		
+	
+	if !Input.is_action_pressed("ctrl"):
+		$Camera2D.position.y = lerp($Camera2D.position.y, 0, 0.5)
 	
 	
 	if Input.is_action_pressed("ply_right"):
 		input.x = 1
+		if Input.is_action_pressed("ctrl"):
+			$Camera2D.position.x = lerp($Camera2D.position.x, 300, 0.1)
 	elif Input.is_action_pressed("ply_left"):
 		input.x = -1
+		if Input.is_action_pressed("ctrl"):
+			$Camera2D.position.x = lerp($Camera2D.position.x, -300, 0.1)
 	else:
 		input.x = 0
+		
+	
+	if !Input.is_action_pressed("ctrl"):
+		$Camera2D.position.x = lerp($Camera2D.position.x, 0, 0.5)
 	
 	########################################################################
 	
@@ -99,7 +117,8 @@ func _physics_process(_delta):
 			$Sprite.position = Vector2(4*$ColPoly.scale.x, -20)
 	
 	if was_tile != on_tile:
-		ani_walkslope()
+		#if input.x == 0: ani_walkslope()
+		
 		was_tile = on_tile
 	
 	
@@ -566,8 +585,12 @@ func is_on_floor_or_wall():
 
 ################################################################################
 
+var screen = Vector2(0,0)
+
 func _draw():#speedometer
-	var adjust = -Vector2(-OS.window_size.x/3 * 1/Global.zoom,-OS.window_size.y/3 * 1/Global.zoom)
+	screen = OS.window_size
+	
+	var adjust = -Vector2(-screen.x/3 * 1/Global.zoom, -screen.y/3 * 1/Global.zoom) + $Camera2D.position
 	var pointy
 	
 #	for n in 180:
@@ -575,33 +598,53 @@ func _draw():#speedometer
 #			pointy = Vector2(-100* 1/Global.zoom,0).rotated(n*PI/180) + adjust
 #			draw_line(adjust,pointy,Color8(0,0,0),1/Global.zoom)
 	
+	#print(OS.get_screen_size())
+	#print(OS.window_size/Global.zoom)
 	
-	if abs(motion.x) > 1500: pointy = Vector2(-33.3,0).rotated(1500*0.00211) + adjust
+	
+	
+	if abs(motion.x) > 1500: pointy = Vector2(-33.3,0).rotated(1500*0.00211)# + adjust
 	else:
 		#pointy = Vector2(-100* 1/Global.zoom,0).rotated(abs(motion.x)*0.004) + adjust
-		pointy = Vector2(-33.3,0).rotated(abs(motion.x)*0.002) + adjust
+		pointy = Vector2(-33.3,0).rotated(abs(motion.x)*0.002)# + adjust + $Camera2D.position
 	
-	$Speedo.position = adjust - Vector2(0,$Speedo.texture.get_height()/2)
-	draw_line(adjust,pointy,Color8(168,0,0),1/Global.zoom)
+	var lazy = adjust - Vector2(0,$Speedo.texture.get_height()/2)
+	if OS.window_size.x/Global.zoom > 640:
+		lazy.x = 213 + $Camera2D.position.x
+	
+	if OS.window_size.y/Global.zoom > 340:
+		lazy.y = 96 + $Camera2D.position.y
 	
 	
 	
-	adjust = -Vector2(OS.window_size.x/3 * 1/Global.zoom,-OS.window_size.y/3 * 1/Global.zoom)
-	pointy = Vector2(-33.3,0).rotated(HP*0.0209) + adjust
+	$Speedo.position = lazy
+	draw_line(lazy+Vector2(0,17),pointy+lazy+Vector2(0,17),Color8(168,0,0),1/Global.zoom)
 	
-	$Health.position = adjust - Vector2(0,$Health.texture.get_height()/2)
-	draw_line(adjust,pointy,Color8(252,84,84),1/Global.zoom)
+	
+	
+	adjust = -Vector2(screen.x/3 * 1/Global.zoom, -screen.y/3 * 1/Global.zoom) + $Camera2D.position
+	pointy = Vector2(-33.3,0).rotated(HP*0.0209)# + adjust + $Camera2D.position
+	
+	lazy = adjust - Vector2(0,$Health.texture.get_height()/2)
+	if OS.window_size.x/Global.zoom > 640:
+		lazy.x = -213 + $Camera2D.position.x
+	
+	if OS.window_size.y/Global.zoom > 340:
+		lazy.y = 96 + $Camera2D.position.y
+	
+	$Health.position = lazy
+	draw_line(lazy+Vector2(0,17),pointy+lazy+Vector2(0,17),Color8(252,84,84),1/Global.zoom)
 	
 	
 	
 	#print(get_viewport().size)
 	#(640, 339)
 	
-	draw_line(Vector2(-320, -170), Vector2(320, -170), Color(1,1,1), 1) #¨
-	draw_line(Vector2(-320, 170), Vector2(320, 170), Color(1,1,1), 1) #_
+	draw_line(Vector2(-320, -170)+ $Camera2D.position, Vector2(320, -170)+ $Camera2D.position, Color(1,1,1), 1) #¨
+	draw_line(Vector2(-320, 170)+ $Camera2D.position, Vector2(320, 170)+ $Camera2D.position, Color(1,1,1), 1) #_
 	
-	draw_line(Vector2(-320, 170), Vector2(-320, -170), Color(1,1,1), 1) #|_
-	draw_line(Vector2(321, 170), Vector2(321, -170), Color(1,1,1), 1) #_|
+	draw_line(Vector2(-320, 170)+ $Camera2D.position, Vector2(-320, -170)+ $Camera2D.position, Color(1,1,1), 1) #|_
+	draw_line(Vector2(321, 170)+ $Camera2D.position, Vector2(321, -170)+ $Camera2D.position, Color(1,1,1), 1) #_|
 
 
 ################################################################################

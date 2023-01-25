@@ -17,7 +17,8 @@ func _ready():
 
 var facing = 1
 var player
-var distanceXY = Vector2(INF,INF)
+var dist_player = Vector2(INF,INF)
+var dist_camera = Vector2(INF,INF)
 var distanceA = INF
 
 var on_tile
@@ -40,7 +41,8 @@ func _process(_delta):
 	
 	###########################################################################
 	
-	distanceXY = player.position - position
+	dist_player = player.position - position
+	dist_camera = player.camerapos - position
 	distanceA = player.position.distance_to(position)
 	
 	###########################################################################
@@ -73,17 +75,17 @@ var was_dir = 1
 var chasing = 0
 
 func idle():
-	if abs(distanceXY.x) < 320 && abs(distanceXY.y) < 170: #player in screen range
+	if abs(dist_camera.x) < 320 && abs(dist_camera.y) < 170: #player in screen range
 		$Sprite.modulate = Color(1,1,1,1)
-		dir = sign(distanceXY.x)
+		dir = sign(dist_player.x)
 		
 		if chasing < 1:
-			$Vision.cast_to = distanceXY #cast to player!
+			$Vision.cast_to = dist_player #cast to player!
 			if $Vision.is_colliding() && $Vision.get_collider().is_in_group("player"):
 				chasing = 50 #we got a hit, reset timer
 		else:
 			if !$Vision.is_colliding() or ($Vision.is_colliding() && !$Vision.get_collider().is_in_group("player")): #player outta sight
-				$Vision.cast_to = distanceXY
+				$Vision.cast_to = dist_player
 				chasing -= 1
 			else:
 				chasing = 50
@@ -98,7 +100,7 @@ func idle():
 				
 			else:
 				if dir == was_dir && $Sprite.frame < 3:# && $AniPlay.current_animation != "turn":
-					if distanceXY.y < 0 && ($FloorcheckL.is_colliding() or $FloorcheckR.is_colliding()):
+					if dist_player.y < 0 && ($FloorcheckL.is_colliding() or $FloorcheckR.is_colliding()):
 						$AniPlay.playback_speed = abs(motion.x/50)
 						$AniPlay.play("walk")
 						motion.x = lerp(motion.x,SPEED*facing,ACCEL)
@@ -132,7 +134,7 @@ func turn_around():#jump up jump up and get down JUMP JUMP JUMP JUMP
 	was_dir = facing
 
 func face_player():
-	facing = sign(distanceXY.x)
+	facing = sign(dist_player.x)
 	was_dir = facing
 
 var on_me = false
@@ -166,7 +168,7 @@ func ouch(damage,knockback, time):
 		change_state(STATES.OUCH)
 		motion.x += knockback.x/5
 		motion.y = 100
-		dir = sign(distanceXY.x)
+		dir = sign(dist_player.x)
 		
 		$AniPlay.stop()
 		if dir == facing:

@@ -21,7 +21,8 @@ func _ready():
 
 var facing = 1
 var player
-var distanceXY = Vector2(INF,INF)
+var dist_player = Vector2(INF,INF)
+var dist_camera = Vector2(INF,INF)
 var distanceA = INF
 
 var on_tile
@@ -49,7 +50,8 @@ func _physics_process(_delta):
 		$Sprite.scale.x = facing
 		$Behind.position.x = -9*facing
 		$Behind.cast_to.x = facing
-	distanceXY = player.position - position
+	dist_player = player.position - position
+	dist_camera = Global.player.camerapos - position
 	distanceA = player.position.distance_to(position)
 	
 	###########################################################################
@@ -117,36 +119,36 @@ func idle():
 				$Sprite.frame = 11
 	
 	
-	#if (abs(distanceXY.x) < abs(get_viewport().size.x/2)) && (abs(distanceXY.y) < abs(get_viewport().size.y/2)): #player in screen range
-	if abs(distanceXY.x) < 320 && abs(distanceXY.y) < 170:
+	#if (abs(dist_player.x) < abs(get_viewport().size.x/2)) && (abs(dist_player.y) < abs(get_viewport().size.y/2)): #player in screen range
+	if abs(dist_camera.x) < 320 && abs(dist_camera.y) < 170:
 		$Sprite.modulate = Color(1,1,1,1)
 		
 		if chasing < 1: #timer 0, idle but look out
 			motion.x = lerp(motion.x,0,DEACCEL/10)
-			$Vision.cast_to = distanceXY #cast to player!
+			$Vision.cast_to = dist_player #cast to player!
 			if $Vision.is_colliding() && $Vision.get_collider().is_in_group("player"):
 				chasing = 50 #we got a hit, reset timer
 			
 		
 		else:#if chasing > 0: chasing 'em
 			if !$Vision.is_colliding() or ($Vision.is_colliding() && !$Vision.get_collider().is_in_group("player")): #player outta sight
-				$Vision.cast_to = distanceXY #cast to player!
+				$Vision.cast_to = dist_player #cast to player!
 				chasing -= 1 #interest timer is ticking down
 			else:
 				chasing = 50 #saw 'em again, reset timer
 			
 			
-			facing = sign(distanceXY.x)
+			facing = sign(dist_player.x)
 			
-			if abs(distanceXY.x) > 100: #close in Y, far in X, attack
-				if abs(distanceXY.x) < 200 && abs(distanceXY.y) < 20: #too far
+			if abs(dist_player.x) > 100: #close in Y, far in X, attack
+				if abs(dist_player.x) < 200 && abs(dist_player.y) < 20: #too far
 					change_state(STATES.ATTACK)
 				else: #walk there
 					motion.x = lerp(motion.x,abs(TOP_SPEED/on_tile)*facing,ACCEL)
 					
 			
 			
-			if abs(distanceXY.x) > 100: #far in X, stop
+			if abs(dist_player.x) > 100: #far in X, stop
 				motion.x = lerp(motion.x,0,DEACCEL/5)
 			
 			else: #too close, step away
@@ -157,8 +159,8 @@ func idle():
 					change_state(STATES.ATTACK)
 				
 			
-			#if (player.jump_check == false) && (sign(distanceXY.y) == -1) && (abs(motion.x) > TOP_SPEED-1/2): #jump #(motion.x > TOP_SPEED*facing/2)
-			if (sign(distanceXY.y) == -1) && abs(distanceXY.y) > 20 && is_on_floor() && abs(distanceXY.x) < 200:#&& abs(distanceXY.x) > 100:# && readyfire:
+			#if (player.jump_check == false) && (sign(dist_player.y) == -1) && (abs(motion.x) > TOP_SPEED-1/2): #jump #(motion.x > TOP_SPEED*facing/2)
+			if (sign(dist_player.y) == -1) && abs(dist_player.y) > 20 && is_on_floor() && abs(dist_player.x) < 200:#&& abs(dist_player.x) > 100:# && readyfire:
 				readyfire = true
 				change_state(STATES.JUMP)
 		
@@ -182,7 +184,7 @@ func audio_step():
 ################################################################################
 
 func attack():
-	facing = sign(distanceXY.x)
+	facing = sign(dist_player.x)
 	chasing -= 1
 	motion.x = lerp(motion.x,0,DEACCEL)
 	

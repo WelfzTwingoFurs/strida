@@ -194,7 +194,7 @@ disabled = true
 
 [node name="ColPoly" type="CollisionPolygon2D" parent="."]
 position = Vector2( 0, -32 )
-polygon = PoolVector2Array( 0, 0, 6, 16, 0, 32, -6, 16 )
+polygon = PoolVector2Array( 0, 0, 1, 16, 0, 32, -1, 16 )
 
 [node name="HeadPoly" type="CollisionPolygon2D" parent="."]
 position = Vector2( 0, -41.6 )

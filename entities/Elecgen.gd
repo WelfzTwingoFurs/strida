@@ -18,7 +18,8 @@ func _ready():
 
 var facing = 1
 var player
-var distanceXY = Vector2(INF,INF)
+var dist_player = Vector2(INF,INF)
+var dist_camera = Vector2(INF,INF)
 var distanceA = INF
 
 var on_tile
@@ -49,7 +50,8 @@ func _physics_process(_delta):
 	
 	if facing != 0:
 		$Sprite.scale.x = facing
-	distanceXY = player.position - position
+	dist_player = player.position - position
+	dist_camera = player.camerapos - position
 	distanceA = player.position.distance_to(position)
 	
 	###########################################################################
@@ -98,16 +100,16 @@ func idle():
 	$Vision.enabled = true 
 	motion.x = 0
 	
-	#if (abs(distanceXY.x) < abs(get_viewport().size.x/2)) && (abs(distanceXY.y) < abs(get_viewport().size.y/2)): #player in screen range
-	if abs(distanceXY.x) < 320 && abs(distanceXY.y) < 170: #player in screen range
+	#if (abs(dist_player.x) < abs(get_viewport().size.x/2)) && (abs(dist_player.y) < abs(get_viewport().size.y/2)): #player in screen range
+	if abs(dist_camera.x) < 320 && abs(dist_camera.y) < 170: #player in screen range
 		$Sprite.modulate = Color(1,1,1,1)
-		$Vision.cast_to = distanceXY
+		$Vision.cast_to = dist_player
 		
 		if $Vision.is_colliding() && $Vision.get_collider().is_in_group("player"):
 			chasing = true
-			facing = sign(distanceXY.x)
+			facing = sign(dist_player.x)
 			
-			if (abs(distanceXY.y) < 50): #close, attack
+			if (abs(dist_player.y) < 50): #close, attack
 				if Global.player.state == 3:
 					$AniPlay.play("attackquick")
 				else:
@@ -118,7 +120,7 @@ func idle():
 				$AniPlay.stop()
 				$Sprite.frame = 0
 			
-			#if abs(distanceXY.x) < 10 && distanceXY.y > 5:
+			#if abs(dist_player.x) < 10 && dist_player.y > 5:
 			#	$AniPlay.play("shootdown")
 			#	change_state(STATES.ATTACK)
 		
@@ -149,7 +151,7 @@ func attack():
 		$AniPlay.play("shootup")
 	
 	if !$AniPlay.is_playing():
-		if abs(distanceXY.x) > 320 or abs(distanceXY.y) > 170 or ($Vision.is_colliding() && !$Vision.get_collider().is_in_group("player")) or !$Vision.is_colliding():
+		if abs(dist_player.x) > 320 or abs(dist_player.y) > 170 or ($Vision.is_colliding() && !$Vision.get_collider().is_in_group("player")) or !$Vision.is_colliding():
 			change_state(STATES.IDLE)
 	
 	#if on_tile > 1:
