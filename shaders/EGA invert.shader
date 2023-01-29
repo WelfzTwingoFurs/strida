@@ -83,8 +83,9 @@ void fragment() {
 		COLOR = c0;}
 	
 	else {
-		float sintime = 0.5+sin(TIME);
-		float randiC = sintime * random(UV);
-		float randiA = sintime * random(SCREEN_UV);
-		COLOR = vec4(randiC,0,randiC/2.0, 0.5);}
+//		float sintime = 0.5+sin(TIME);
+//		float randiC = sintime * random(UV);
+//		float randiA = sintime * random(SCREEN_UV);
+//		COLOR = vec4(randiC,0,randiC/2.0, 0.5);}
+		COLOR = c0;}
 	}

@@ -30,10 +30,10 @@ void fragment() {
 	vec4 c16 = vec4(r65, r65, r65, 1.0);
 	
 	if (COLOR == c1) {
-		COLOR = c8;}
+		COLOR = c16;}
 
 	else if (COLOR == c2) {
-		COLOR = c8;}
+		COLOR = c4;}
 
 	else if (COLOR == c3) {
 		COLOR = c8;}
@@ -42,10 +42,10 @@ void fragment() {
 		COLOR = c8;}
 
 	else if (COLOR == c5) {
-		COLOR = c8;}
+		COLOR = c7;}
 
 	else if (COLOR == c6) {
-		COLOR = c8;}
+		COLOR = c7;}
 
 	else if (COLOR == c7) {
 		COLOR = c8;}
@@ -68,13 +68,13 @@ void fragment() {
 		COLOR = c4;}
 
 	else if (COLOR == c13) {
-		COLOR = c5;}
+		COLOR = c15;}
 
 	else if (COLOR == c14) {
 		COLOR = c6;}
 
 	else if (COLOR == c15) {
-		COLOR = c7;}
+		COLOR = c5;}
 
 	else if (COLOR == c16) {
 		COLOR = c8;}
@@ -83,8 +83,9 @@ void fragment() {
 		COLOR = c0;}
 	
 	else {
-		float sintime = 0.5+sin(TIME);
-		float randiC = sintime * random(UV);
-		float randiA = sintime * random(SCREEN_UV);
-		COLOR = vec4(randiC,0,randiC/2.0, 0.5);}
+//		float sintime = 0.5+sin(TIME);
+//		float randiC = sintime * random(UV);
+//		float randiA = sintime * random(SCREEN_UV);
+//		COLOR = vec4(randiC,0,randiC/2.0, 0.5);}
+		COLOR = c0;}
 	}

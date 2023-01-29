@@ -22,6 +22,6 @@ func _process(_delta):
 	
 	
 	if timer < 0:
-		timer = 0.5
-	elif timer > 0.5:
+		timer = 1
+	elif timer > 1:
 		timer = 0
