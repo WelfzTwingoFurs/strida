@@ -46,10 +46,12 @@
 [ext_resource path="res://shaders/EGA CGA dark red.shader" type="Shader" id=44]
 [ext_resource path="res://sprites/deadthunder.png" type="Texture" id=45]
 [ext_resource path="res://shaders/milliseconds.gd" type="Script" id=46]
-[ext_resource path="res://shaders/EGA CGA dark red SCREEN static.shader" type="Shader" id=47]
+[ext_resource path="res://shaders/EGA CGA dark red SCREEN.shader" type="Shader" id=47]
 
 [sub_resource type="ShaderMaterial" id=1]
 shader = ExtResource( 47 )
+shader_param/switcher = true
+shader_param/switcher2 = true
 
 [sub_resource type="ShaderMaterial" id=2]
 shader = ExtResource( 11 )
@@ -182,6 +184,7 @@ position = Vector2( 584.251, 1000 )
 [node name="CanvasLayer" type="CanvasLayer" parent="shaders"]
 
 [node name="screen" type="ColorRect" parent="shaders/CanvasLayer"]
+visible = false
 material = SubResource( 1 )
 margin_right = 4096.0
 margin_bottom = 4096.0

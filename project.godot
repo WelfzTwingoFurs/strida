@@ -25,8 +25,8 @@ Global="*res://Globalls.gd"
 
 [display]
 
-window/size/width=960
-window/size/height=538
+window/size/width=1282
+window/size/height=680
 window/size/always_on_top=true
 
 [importer_defaults]
@@ -209,6 +209,11 @@ res_half={
 res_double={
 "deadzone": 0.5,
 "events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":16777245,"unicode":0,"echo":false,"script":null)
+ ]
+}
+ply_strafe={
+"deadzone": 0.5,
+"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":16777234,"unicode":0,"echo":false,"script":null)
  ]
 }
 
