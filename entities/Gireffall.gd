@@ -57,7 +57,7 @@ func _process(_delta):
 		$moving/Polygon2D.position = Vector2(56,-28)
 		$Area/Col.shape.points = [Vector2(8,16), Vector2($moving/Head.position.x,$moving/Head.position.y+45),Vector2(-int(y*0.7),int(y*0.7))]
 		$Checker.position.y = -5
-		$ColPoly.polygon = [Vector2(6,16), Vector2(0,32), Vector2(-6,16)]
+		$ColPoly.polygon = [Vector2(1,16), Vector2(0,32), Vector2(-1,16)]
 		
 		#if $Checker.is_colliding():
 		#	y = abs($Checker.get_collision_point().x - position.x)/2 -40
@@ -75,7 +75,7 @@ func _process(_delta):
 		$moving/Polygon2D.rotation_degrees = 0
 		$moving/Polygon2D.position = Vector2(-20,-65)
 		$Area/Col.shape.points = [Vector2(8,16), Vector2(0, y), Vector2(8,y)]
-		$ColPoly.polygon = [Vector2($moving/Head.position.x*$Sprite.scale.x,$moving/Head.position.y+45), Vector2(6,16), Vector2(0,32), Vector2(-6,16)]
+		$ColPoly.polygon = [Vector2($moving/Head.position.x*$Sprite.scale.x,$moving/Head.position.y+45), Vector2(1,16), Vector2(0,32), Vector2(-1,16)]
 		
 		if $Checker.is_colliding():
 			$Checker.cast_to = Vector2(abs(y)+10, 0)

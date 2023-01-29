@@ -44,7 +44,7 @@ tracks/2/keys = {
 "values": [ true, false, true ]
 }
 
-[sub_resource type="Animation" id=5]
+[sub_resource type="Animation" id=2]
 resource_name = "fixconditions"
 length = 0.1
 tracks/0/type = "value"
@@ -84,8 +84,7 @@ tracks/2/keys = {
 "values": [ true ]
 }
 
-[sub_resource type="Animation" id=2]
-resource_name = "getup"
+[sub_resource type="Animation" id=3]
 length = 0.3
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -124,7 +123,7 @@ tracks/2/keys = {
 "values": [ true ]
 }
 
-[sub_resource type="Animation" id=3]
+[sub_resource type="Animation" id=4]
 length = 2.0
 loop = true
 tracks/0/type = "value"
@@ -140,18 +139,20 @@ tracks/0/keys = {
 "values": [ 3, 4, 5, 4 ]
 }
 
-[sub_resource type="ConvexPolygonShape2D" id=4]
+[sub_resource type="ConvexPolygonShape2D" id=5]
 
-[node name="Gireffall" type="KinematicBody2D"]
+[node name="Gireffall" type="KinematicBody2D" groups=[
+"hurtful",
+]]
 collision_layer = 4
 collision_mask = 3
 script = ExtResource( 3 )
 
 [node name="AniPlay" type="AnimationPlayer" parent="."]
 anims/fall = SubResource( 1 )
-anims/fixconditions = SubResource( 5 )
-anims/getup = SubResource( 2 )
-anims/walk = SubResource( 3 )
+anims/fixconditions = SubResource( 2 )
+anims/getup = SubResource( 3 )
+anims/walk = SubResource( 4 )
 
 [node name="moving" type="Node2D" parent="."]
 
@@ -189,7 +190,7 @@ collision_mask = 3
 position = Vector2( 0, -32 )
 
 [node name="Col" type="CollisionShape2D" parent="Area"]
-shape = SubResource( 4 )
+shape = SubResource( 5 )
 disabled = true
 
 [node name="ColPoly" type="CollisionPolygon2D" parent="."]

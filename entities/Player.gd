@@ -616,7 +616,7 @@ func _draw():#speedometer
 		lazy.y = 96 + $Camera2D.position.y
 	
 	
-	
+
 	$Speedo.position = lazy
 	draw_line(lazy+Vector2(0,17),pointy+lazy+Vector2(0,17),Color8(168,0,0),1/Global.zoom)
 	
